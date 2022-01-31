@@ -1,0 +1,14 @@
+[Unit]
+Description = Server Mqtt
+After=multi-user.target
+
+[Service]
+User=serv
+Type=forking
+WorkingDirectory=/home/serv/mqtt
+ExecStart= python3 multiservice.py
+Restart=always
+
+
+[Install]
+WantedBy=multi-user.target
