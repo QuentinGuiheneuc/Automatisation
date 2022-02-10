@@ -30,7 +30,7 @@ app.get("/users", (req, res, next) => {
         .query(sql)
         .then((rows) => {
           console.log(rows);
-          console.log(rows.param);
+          console.log((rows[0].param.test = "azerty"));
           res.send(rows);
           conn.end();
         })
