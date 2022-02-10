@@ -19,9 +19,33 @@ app.get("/", (req, res, next) => {
   res.send("bienvunue");
 });
 
+async function resquest() {}
+
 app.get("/users", (req, res, next) => {
   const sql = "SELECT * FROM mqttclient";
-  res.send(query.db(sql));
+  query.db
+    .getConnection()
+    .then((conn) => {
+      conn
+        .query(sql)
+        .then((rows) => {
+          console.log(rows); //[ {val: 1}, meta: ...
+          res.send(rows);
+          conn.end();
+        })
+        .catch((err) => {
+          //handle error
+          res.status(400);
+          res.end();
+          console.log(err);
+          conn.end();
+        });
+    })
+    .catch((err) => {
+      res.status(401);
+      res.end();
+      console.log(err);
+    });
 });
 
 app.use(function (req, res) {

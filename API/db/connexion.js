@@ -33,4 +33,4 @@ const query = (sql) => {
     });
   return results;
 };
-module.exports = { db: query };
+module.exports = { db: pool };
