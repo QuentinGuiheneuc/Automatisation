@@ -29,7 +29,8 @@ app.get("/users", (req, res, next) => {
       conn
         .query(sql)
         .then((rows) => {
-          console.log(rows); //[ {val: 1}, meta: ...
+          console.log(rows);
+          console.log(rows.param);
           res.send(rows);
           conn.end();
         })
