@@ -11,6 +11,7 @@ const pool = mariadb.createPool({
   connectionLimit: 5,
 });
 const query = (sql) => {
+  let results;
   pool
     .getConnection()
     .then((conn) => {
@@ -18,8 +19,8 @@ const query = (sql) => {
         .query(sql)
         .then((rows) => {
           console.log(rows); //[ {val: 1}, meta: ...
+          results = rows;
           conn.end();
-          return rows;
         })
         .catch((err) => {
           //handle error
@@ -30,5 +31,6 @@ const query = (sql) => {
     .catch((err) => {
       console.log(err);
     });
+  return results;
 };
 module.exports = { db: query };
