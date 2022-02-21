@@ -412,9 +412,19 @@ def liste_cache(mydb):
         "SELECT `id_topic`, `id_client`, `ressult` FROM `mqttcache`"
     )
     myresult = mycursor.fetchall()
-    print(myresult)
+    dis = {}
+    i = 0
+    for lisCache in myresult:
+        dis_1 = {
+            "id_topic": lisCache[0],
+            "id_client" : lisCache[1],
+            "value": json.loads(lisCache[2]),
+        }
+        dis[str(i)] = dis_1
+        i += 1
+    # print(json.dumps(dis))
 
-    return myresult
+    return json.dumps(dis)
 
 
 def liste_topic(mydb):

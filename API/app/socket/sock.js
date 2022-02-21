@@ -1,89 +1,199 @@
-const config = require("../../config.js");
 const Net = require("net");
 
-// class mqttSocker extends Net {
-//   constructor() {
-//     this.client = new Net.Socket();
-//   }
-// }
-
-var client = new Net.Socket();
-let statusValue = false;
-let isSarted = false;
-//this.status;
-client.connect(
-  {
-    port: config.socket.serverofpython.port,
-    host: config.socket.serverofpython.host,
-  },
-  () => {
-    console.log("TCP connection established with the server.");
-  }
-);
-//console.log(client);
-//client.write(`list;topic`);
-// The client can also receive data from the server by reading from its socket.
-console.log();
-client.on("data", function (chunk) {
-  //console.log(chunk);
-  const data = chunk.toString();
-  const datasqlit = data.split(config.socket.serverofpython.separation);
-  const action1 = datasqlit[0];
-  const action2 = datasqlit[1];
-  const value = datasqlit[2];
-  switch (action1) {
-    case "server":
-      switch (action2) {
-        case "status":
-          statusValue = value;
-          break;
-        case "start":
-          statusValue = value;
-          isSarted = value;
-          break;
-        case "stop":
-          statusValue = value;
-          isSarted = value;
-      }
-      break;
-  }
-
-  console.log(`Data received from the server: ${data}.`);
-  console.log();
-});
-// client.on("server", function (value) {
-//   console.log(value);
-// });
-client.on("ready", function () {
-  console.log("Requested an end to the TCP ready");
-});
-
-// client.on("end", function () {
-//   console.log("Requested an end to the TCP connection");
-// });
-client.on("error", function (err) {
-  console.log(`Requested an error ${err}`);
-});
-
-const status = () => {
-  return new Promise((resolve, reject) => {
-    client.write(`server;status`);
-    if (statusValue == undefined || statusValue == null) {
-      resolve(statusValue);
+class mqttSocker {
+  separation = ";";
+  err = "err value of null or undefined";
+  host = null;
+  port = 0;
+  connect = (host, port) => {
+    this.host = host;
+    this.port = port;
+  };
+  socke;
+  ertement = (chunk) => {
+    const data = chunk.toString();
+    console.log(data);
+    const datasqlit = data.split(this.separation);
+    const action1 = datasqlit[0];
+    const action2 = datasqlit[1];
+    const value = datasqlit[2];
+    switch (action1) {
+      case "server":
+        switch (action2) {
+          case "status":
+            return value;
+            break;
+          case "start":
+            return value;
+            break;
+          case "stop":
+            return value;
+            break;
+          default:
+            return null;
+        }
+      case "list":
+        return action2;
+      default:
+        return null;
     }
-  });
-  //return client;
-};
-// mqttSocker = () => {};
-// mqttSocker();
-//mqtt.status();
-//module.exports = { mqttSocker };
+  };
+  sok = () => {
+    this.socke = new Net.Socket();
+    let isco = false;
+    this.socke.connect(
+      {
+        host: this.host,
+        port: this.port,
+        onread: {
+          // Reuses a 4KiB Buffer for every read from the socket.
+          buffer: Buffer.alloc(4 * 1024),
+          callback: function (nread, buf) {
+            // Received data is available in `buf` from 0 to `nread`.
+            console.log(buf.toString("utf8", 0, nread));
+          },
+        },
+      },
+      () => {
+        isco = true;
+      }
+    );
 
-async function start() {
-  return;
+    this.socke.on("end", function () {
+      console.log("Requested an end to the TCP connection");
+    });
+  };
+
+  /**
+   * Status of server MQTT
+   * @return {boolean}
+   */
+  status = () => {
+    return new Promise((resolve, reject) => {
+      this.sok();
+      //console.log(this.socke, "conn", this.host, this.port);
+      this.socke.write(`server;status`);
+      this.socke.on("data", (chunk) => {
+        let value = this.ertement(chunk);
+        if (value) {
+          resolve(value);
+        } else {
+          reject(so.err);
+        }
+      });
+      this.socke.on("error", function (err) {
+        reject(err);
+      });
+    });
+  };
+  /**
+   * Start of server MQTT
+   * @return {boolean}
+   */
+  start = () => {
+    return new Promise((resolve, reject) => {
+      this.sok();
+      this.socke.write(`server;start`);
+      this.socke.on("data", (chunk) => {
+        let value = this.ertement(chunk);
+        if (value) {
+          resolve(value);
+        } else {
+          reject(so.err);
+        }
+      });
+      this.socke.on("error", function (err) {
+        reject(err);
+      });
+    });
+  };
+  /**
+   * Stop of server MQTT
+   * @return {boolean}
+   */
+  stop = () => {
+    return new Promise((resolve, reject) => {
+      this.sok();
+      this.socke.write(`server;stop`);
+      this.socke.on("data", (chunk) => {
+        let value = this.ertement(chunk);
+        if (value) {
+          resolve(value);
+        } else {
+          reject(so.err);
+        }
+      });
+      this.socke.on("error", function (err) {
+        reject(err);
+      });
+    });
+  };
+  /**
+   * return objet of MQTT Topic
+   * @return array[{objet}]
+   */
+  listsTopic = () => {
+    return new Promise((resolve, reject) => {
+      this.sok();
+      this.socke.write(`list;topic`);
+      this.socke.on("data", (chunk) => {
+        let value = this.ertement(chunk);
+        if (value) {
+          resolve(value);
+        } else {
+          reject(so.err);
+        }
+      });
+      this.socke.on("error", function (err) {
+        reject(err);
+      });
+    });
+  };
+  /**
+   * return objet of MQTT Client
+   * @return  array[{objet}]
+   */
+  listsClient = () => {
+    return new Promise((resolve, reject) => {
+      this.sok();
+      this.socke.write(`list;client`);
+      this.socke.on("data", (chunk) => {
+        let value = this.ertement(chunk);
+        if (value) {
+          resolve(value);
+        } else {
+          reject(so.err);
+        }
+      });
+      this.socke.on("error", function (err) {
+        reject(err);
+      });
+    });
+  };
+  /**
+   * return objet of MQTT Cache
+   * @return array[{objet}]
+   */
+  listsCache = () => {
+    return new Promise((resolve, reject) => {
+      this.sok();
+      this.socke.write(`list;cache`);
+      //console.log(this.socke);
+      this.socke.on("data", (chunk) => {
+        console.log(chunk);
+        let value = this.ertement(chunk);
+        if (value) {
+          resolve(value);
+        } else {
+          reject(so.err);
+        }
+      });
+      this.socke.on("error", function (err) {
+        reject(err);
+      });
+    });
+  };
+  // _event.evenserver = evenserver;
+  //addListener(event: 'data', listener: (data: Buffer) => void): this;
 }
-status().then((value) => {
-  console.log(value);
-});
-
-console.log(start());
+module.exports = mqttSocker;

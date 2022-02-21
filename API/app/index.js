@@ -4,11 +4,46 @@ const route = require("./router.js");
 const query = require("../db/connexion.js");
 const app = express();
 const sock = require("./socket/sock.js");
-app.get("/", (req, res, next) => {
-  console.log("Correspond à /games");
-  res.send("bienvunue");
-});
+const client = new sock();
+client.separation = config.socket.serverofpython.separation;
+client.connect(
+  config.socket.serverofpython.host,
+  config.socket.serverofpython.port
+);
 
+app.get("/topic", (req, res, next) => {
+  client.listsTopic().then((value) => {
+    console.log("azertyu");
+    res.send(value);
+  });
+  //res.send("bienvunue");
+});
+app.get("/client", (req, res, next) => {
+  client
+    .listsClient()
+    .then((value) => {
+      console.log("azertyu");
+      res.send(value);
+    })
+    .catch((err) => {
+      res.status(err);
+      res.end();
+    });
+  //res.send("bienvunue");
+});
+app.get("/cache", (req, res, next) => {
+  client
+    .listsCache()
+    .then((value) => {
+      console.log("azertyu");
+      res.send(value);
+    })
+    .catch((err) => {
+      res.status(err);
+      res.end();
+    });
+  //res.send("bienvunue");
+});
 async function db(sql) {
   return new Promise((resolve, reject) => {
     query.db
@@ -27,7 +62,6 @@ async function db(sql) {
       })
       .catch((err) => {
         reject(401);
-        conn.end();
       });
   });
 }
