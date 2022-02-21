@@ -1,4 +1,43 @@
 const Net = require("net");
+class sok {
+  host = null;
+  port = 0;
+  constructor(host = "localhost", port = 65000) {
+    this.host = host;
+    this.port = port;
+  }
+
+  connect = (host, port) => {
+    this.host = host;
+    this.port = port;
+  };
+  sok = () => {
+    this.socke = new Net.Socket();
+    let isco = false;
+    this.socke.connect(
+      {
+        host: this.host,
+        port: this.port,
+        onread: {
+          // Reuses a 4KiB Buffer for every read from the socket.
+          buffer: Buffer.alloc(4 * 1024),
+          callback: function (nread, buf) {
+            // Received data is available in `buf` from 0 to `nread`.
+            console.log(buf.toString("utf8", 0, nread));
+          },
+        },
+      },
+      () => {
+        isco = true;
+      }
+    );
+    this.socke.on("end", function () {
+      console.log("Requested an end to the TCP connection");
+    });
+
+    return this.socke;
+  };
+}
 
 class mqttSocker {
   separation = ";";
@@ -9,7 +48,6 @@ class mqttSocker {
     this.host = host;
     this.port = port;
   };
-  socke;
   ertement = (chunk) => {
     const data = chunk.toString();
     console.log(data);
@@ -38,31 +76,6 @@ class mqttSocker {
         return null;
     }
   };
-  sok = () => {
-    this.socke = new Net.Socket();
-    let isco = false;
-    this.socke.connect(
-      {
-        host: this.host,
-        port: this.port,
-        onread: {
-          // Reuses a 4KiB Buffer for every read from the socket.
-          buffer: Buffer.alloc(4 * 1024),
-          callback: function (nread, buf) {
-            // Received data is available in `buf` from 0 to `nread`.
-            console.log(buf.toString("utf8", 0, nread));
-          },
-        },
-      },
-      () => {
-        isco = true;
-      }
-    );
-
-    this.socke.on("end", function () {
-      console.log("Requested an end to the TCP connection");
-    });
-  };
 
   /**
    * Status of server MQTT
@@ -70,10 +83,11 @@ class mqttSocker {
    */
   status = () => {
     return new Promise((resolve, reject) => {
-      this.sok();
+      const s = new sok(this.host, this.port);
+      const sock = s.sok();
       //console.log(this.socke, "conn", this.host, this.port);
-      this.socke.write(`server;status`);
-      this.socke.on("data", (chunk) => {
+      sock.write(`server;status`);
+      sock.on("data", (chunk) => {
         let value = this.ertement(chunk);
         if (value) {
           resolve(value);
@@ -81,7 +95,7 @@ class mqttSocker {
           reject(so.err);
         }
       });
-      this.socke.on("error", function (err) {
+      sock.on("error", function (err) {
         reject(err);
       });
     });
@@ -92,9 +106,10 @@ class mqttSocker {
    */
   start = () => {
     return new Promise((resolve, reject) => {
-      this.sok();
-      this.socke.write(`server;start`);
-      this.socke.on("data", (chunk) => {
+      const s = new sok(this.host, this.port);
+      const sock = s.sok();
+      sock.write(`server;start`);
+      sock.on("data", (chunk) => {
         let value = this.ertement(chunk);
         if (value) {
           resolve(value);
@@ -102,7 +117,7 @@ class mqttSocker {
           reject(so.err);
         }
       });
-      this.socke.on("error", function (err) {
+      sock.on("error", function (err) {
         reject(err);
       });
     });
@@ -113,9 +128,10 @@ class mqttSocker {
    */
   stop = () => {
     return new Promise((resolve, reject) => {
-      this.sok();
-      this.socke.write(`server;stop`);
-      this.socke.on("data", (chunk) => {
+      const s = new sok(this.host, this.port);
+      const sock = s.sok();
+      sock.write(`server;stop`);
+      sock.on("data", (chunk) => {
         let value = this.ertement(chunk);
         if (value) {
           resolve(value);
@@ -123,7 +139,7 @@ class mqttSocker {
           reject(so.err);
         }
       });
-      this.socke.on("error", function (err) {
+      sock.on("error", function (err) {
         reject(err);
       });
     });
@@ -134,9 +150,10 @@ class mqttSocker {
    */
   listsTopic = () => {
     return new Promise((resolve, reject) => {
-      this.sok();
-      this.socke.write(`list;topic`);
-      this.socke.on("data", (chunk) => {
+      const s = new sok(this.host, this.port);
+      const sock = s.sok();
+      sock.write(`list;topic`);
+      sock.on("data", (chunk) => {
         let value = this.ertement(chunk);
         if (value) {
           resolve(value);
@@ -144,7 +161,7 @@ class mqttSocker {
           reject(so.err);
         }
       });
-      this.socke.on("error", function (err) {
+      sock.on("error", function (err) {
         reject(err);
       });
     });
@@ -155,9 +172,10 @@ class mqttSocker {
    */
   listsClient = () => {
     return new Promise((resolve, reject) => {
-      this.sok();
-      this.socke.write(`list;client`);
-      this.socke.on("data", (chunk) => {
+      const s = new sok(this.host, this.port);
+      const sock = s.sok();
+      sock.write(`list;client`);
+      sock.on("data", (chunk) => {
         let value = this.ertement(chunk);
         if (value) {
           resolve(value);
@@ -165,7 +183,7 @@ class mqttSocker {
           reject(so.err);
         }
       });
-      this.socke.on("error", function (err) {
+      sock.on("error", function (err) {
         reject(err);
       });
     });
@@ -176,10 +194,11 @@ class mqttSocker {
    */
   listsCache = () => {
     return new Promise((resolve, reject) => {
-      this.sok();
-      this.socke.write(`list;cache`);
-      //console.log(this.socke);
-      this.socke.on("data", (chunk) => {
+      const s = new sok(this.host, this.port);
+      const sock = s.sok();
+      sock.write(`list;cache`);
+      //console.log(sock);
+      sock.on("data", (chunk) => {
         console.log(chunk);
         let value = this.ertement(chunk);
         if (value) {
@@ -188,7 +207,7 @@ class mqttSocker {
           reject(so.err);
         }
       });
-      this.socke.on("error", function (err) {
+      sock.on("error", function (err) {
         reject(err);
       });
     });
