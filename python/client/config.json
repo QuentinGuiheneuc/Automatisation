@@ -1,0 +1,55 @@
+{
+  "GPIO": true,
+  "UPS": false,
+  "mqtt": {
+    "host": "192.168.1.39",
+    "port": 1883,
+    "username": "serv",
+    "password": "quentin",
+    "uid": 4563210789,
+    "separation": ";",
+    "topic": "prise",
+    "name_client_flie": "client.txt",
+    "test": false
+  },
+  "action": {
+    "Button_1": {
+      "type": "button",
+      "pullUpDnControl": "up",
+      "pin": 16,
+      "mode": "in",
+      "mqtt": {
+        "topic": "Button_1"
+      }
+    },
+    "Button_2": {
+      "type": "button",
+      "pullUpDnControl": "up",
+      "pin": 18,
+      "mode": "in",
+      "mqtt": {
+        "topic": "Button_2"
+      }
+    },
+    "Button_3": {
+      "type": "swich",
+      "pullUpDnControl": "up",
+      "pin": 13,
+      "mode": "in",
+      "mqtt": {
+        "code_ex": 202,
+        "topic": "Button_3"
+      }
+    },
+    "led_1": {
+      "type": "led",
+      "pullUpDnControl": "",
+      "pin": 37,
+      "mode": "out",
+      "mqtt": {
+        "topic": "led_1",
+        "value": true
+      }
+    }
+  }
+}

@@ -133,8 +133,13 @@ def call_All_Objet(mydb):
     actions.initListeObjet(mydb)
     client.publish(f"status/{Client_id}/demande", "")
 
+ThreadViweLogMqtt = Thread_custom(target=actions.wath, name="ThreadViweLogMqtt")
+ThreadViweLogMqtt.Daemon = True
+
 ThreadMqtt = Thread_custom(target=callback, name="callback")
 ThreadMqtt.Daemon = True
+
+
 
 # Auto Start
 if config["start"]:
@@ -146,11 +151,14 @@ if config["start"]:
         database=config["mysql"]["database"],
     )
     is_start = True
+    ThreadViweLogMqtt.start()
     ThreadMqtt.start()
+
     for (titreTopic) in actions.print_titreTopic(mydb2):
         client.subscribe(titreTopic, 2)
     client.subscribe("$SYS/#", 2)
     lock = True
+    mydb2.close()
 
 # Socket
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -201,6 +209,9 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                             exe = actions.liste_execute(mydb)
                             print("Execute" ,exe)
                             conn.sendall(f"list{separation_socket}{exe}".encode(encode_socket))
+                        if action_1 == "param":
+                            listParam = actions.liste_param(mydb)
+                            conn.sendall(f"list{separation_socket}{listParam}".encode(encode_socket))
                     if action == "server":
                         if action_1 == "start":
                             is_start = True                            
@@ -211,7 +222,9 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                                         print(titreTopic)
                                     lock = True
                                 if not ThreadMqtt.is_alive():
+                                    ThreadViweLogMqtt.start()
                                     ThreadMqtt.start()
+                                    
                                 conn.sendall(
                                     f"{action}{separation_socket}{action_1}{separation_socket}{is_start}".encode(
                                         encode_socket
@@ -245,12 +258,16 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                             value = slipte[2]
                             liste = actions.cache_topic(mydb,value,separation)
                             print(liste)
-                            conn.sendall(f"{liste}".encode(encode_socket))
+                            conn.sendall(f"topic{separation_socket}{liste}".encode(encode_socket))
                         if action_1 == "is_co":
-                            call_All_Objet(mydb)
+                            # call_All_Objet(mydb)
                             conn.sendall(
                                 f"exe".encode(encode_socket)
                             )
+                        if action_1 == "is_co_res":
+                            actions.is_exists_client(mydb,1)
+                            conn.sendall(f"is_co_res{separation_socket}true".encode(encode_socket))
+
                     if action == "add":
                         if action_1 == "client":
                             uid = slipte[2]
@@ -259,9 +276,22 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                             conn.sendall(f"{actions.add_client(mydb,separation_socket,name,uid,topic)}".encode(encode_socket))
                         if action_1 == "fkfk":
                             print()
+                        if action_1 == "param":
+                            name = str(slipte[2])
+                            param_json = slipte[3]
+                            value = actions.add_mqtt_param(mydb,separation_socket, name, param_json)
+                            print(name,param_json)
+                            conn.sendall(f"{value}".encode(encode_socket))                            
+
                     if action == "update":
                         if action_1 == "clientname":
                             uid = slipte[2]
                             name = slipte[3]
                             conn.sendall(f"{actions.update_client_name(mydb,separation_socket,name,uid)}".encode(encode_socket))
-                    #if action == "":      
+                        if action_1 == "param":
+                            jsonVal = slipte[2]
+                            conn.sendall(f"{actions.update_mqtt_param(mydb,separation_socket,jsonVal)}".encode(encode_socket))
+                    if action == "del":
+                        if action_1 == "param":
+                            id = slipte[2]
+                            conn.sendall(f"{actions.deleted_param(mydb,separation_socket,id)}".encode(encode_socket))      
