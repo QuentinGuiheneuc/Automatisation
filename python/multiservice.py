@@ -65,7 +65,7 @@ def on_execut(cliente, userdata, message):
         " < received message "
         + message.topic
     )
-    actions.notify_error(mydb1, message,separation)
+    # actions.notify_error(mydb1, message,separation)
     try:
         print(message.topic, message.payload.decode("utf-8"))
         if (message.topic != ""):
@@ -98,6 +98,7 @@ def on_execut(cliente, userdata, message):
                             call_All_Objet(mydb1)
                         # actions.execute(mydb1, message, client, separation)
                         # actions.cache_(mydb1, message,separation)
+            mydb1.close()
     except ValueError as e:
         print()
         mydb1.close()
@@ -210,7 +211,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                             print("Execute" ,exe)
                             conn.sendall(f"list{separation_socket}{exe}".encode(encode_socket))
                         if action_1 == "param":
-                            listParam = actions.liste_param(mydb)
+                            id = slipte[2]
+                            listParam = actions.liste_param(mydb,id)
                             conn.sendall(f"list{separation_socket}{listParam}".encode(encode_socket))
                     if action == "server":
                         if action_1 == "start":
@@ -295,3 +297,4 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                         if action_1 == "param":
                             id = slipte[2]
                             conn.sendall(f"{actions.deleted_param(mydb,separation_socket,id)}".encode(encode_socket))      
+                

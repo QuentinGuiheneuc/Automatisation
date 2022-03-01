@@ -69,7 +69,7 @@ def on_modified(event):
     print(f"{istime.tm_hour}:{istime.tm_min}")
     print(lastlinesp)
     try:
-        if lastlinesp.index("disconnct") != 0:
+        if lastlinesp.index("disconnected") != 0:
             try:
                 mycursor = mydb1.cursor()
                 sql = f"UPDATE `mqttclient` SET `is_alive` = '0' WHERE `uid` = '{lastlinesp[2]}'"
@@ -78,7 +78,7 @@ def on_modified(event):
                 print(sql)
             except:
                 print("Error", sql)
-            print(f"disconnct {lastlinesp[2]} \n")
+            print(f"disconnected {lastlinesp[2]} \n")
     except ValueError as err :
         pass
 
@@ -167,19 +167,19 @@ def cache_(bbd, message):
         eventTopic = splitTopic[2]
         if eventTopic == "post":
             mycursor = bbd.cursor()
-            sql = "SELECT id_client FROM `mqttcache` WHERE `id_client` = (SELECT id_client FROM `mqttclient` WHERE client = '{0}')".format(
+            sql = "SELECT id_client FROM `mqttcache` WHERE `id_client` = (SELECT id_client FROM `mqttclient` WHERE `uid` = '{0}')".format(
                 clientTopic
             )
             mycursor.execute(sql)
             myresult = mycursor.fetchall()
-            # print(myresult)
+            print("cache_", myresult)
             if myresult != []:
-                sql = f"UPDATE `mqttcache` SET `ressult`='{payload}' WHERE `id_client` = (SELECT id_client FROM `mqttclient` WHERE client = '{clientTopic}')"
+                sql = f"UPDATE `mqttcache` SET `ressult`='{payload}' WHERE `id_client` = (SELECT id_client FROM `mqttclient` WHERE `uid` = '{clientTopic}')"
                 print("UPDATE \n")
                 mycursor.execute(sql)
                 bbd.commit()
             else:
-                sql = f"INSERT INTO `mqttcache`(`id_topic`, `id_client`, `ressult`) VALUES ((SELECT id_topic FROM `mqtttopic` WHERE topic = '{groupTopic}/#'),(SELECT id_client FROM `mqttclient` WHERE client = '{clientTopic}'), '{payload}')"
+                sql = f"INSERT INTO `mqttcache`(`id_topic`, `id_client`, `ressult`) VALUES ((SELECT id_topic FROM `mqtttopic` WHERE topic = '{groupTopic}/#'),(SELECT id_client FROM `mqttclient` WHERE `uid` = '{clientTopic}'), '{payload}')"
                 print("INSERT \n")
                 mycursor.execute(sql)
                 bbd.commit()
@@ -396,7 +396,6 @@ def execute(bdd, message, mqtt):
             i = i + 1
             mqtt.publish(value["topic_ex"], json.dumps(envoyValue), 0)
         print("resluta execut",value_response)
-    bdd.close()
 
 
 def swich(bdd,value):
@@ -461,7 +460,7 @@ def affiche_list_function(function):
     dis_2["mod"] = dis
     return json.dumps(dis_2)
 
-
+# a refaire
 def add_execut(
     bdd,
     separation_socket,
@@ -488,6 +487,7 @@ def add_execut(
         return f"erreur_{separation_socket}{e}"
 
 
+
 def function_Update(bdd, id, object):
     print(
         f"UPDATE `mqttexecut` SET `function`='{json.dumps(object)}' WHERE id = {int(id)}"
@@ -497,7 +497,7 @@ def function_Update(bdd, id, object):
 def liste_client(mydb):
     mycursor = mydb.cursor()
     mycursor.execute(
-        "SELECT id_client,topic,client,uid,is_alive,ip FROM `mqttclient`"
+        "SELECT id_client,topic,client,uid,is_alive,id_param,param,ip FROM `mqttclient`"
     )
     myresult = mycursor.fetchall()
     # print(myresult)
@@ -509,11 +509,13 @@ def liste_client(mydb):
             "client": line[2],
             "uid": line[3],
             "is_alive": bool(line[4]),
-            "ip": line[5],
+            "id_param": line[5],
+            "param": json.loads(line[6]),
+            "ip": line[7],
         }
         dis.append(dis_1);
-    
     return json.dumps(dis)
+
 
 
 def liste_cache(mydb):
@@ -530,8 +532,8 @@ def liste_cache(mydb):
             "value": json.loads(lisCache[2]),
         }
         dis.append(dis_1);
+    
     # print(json.dumps(dis))
-
     return json.dumps(dis)
 
 
@@ -542,14 +544,12 @@ def liste_topic(mydb):
     )
     myresult = mycursor.fetchall()
     dis = []
-    i = 0
     for line in myresult:
         dis_1 = {"id": line[0], "topic": line[1], "active": bool(line[2])}
         dis.append(dis_1);
-        i = i + 1
     return json.dumps(dis)
 
-
+# a voire
 def liste_execute(mydb):
     rek = """
             SELECT id,mqc.client,mqc_e.client,mqe.topic_in,mqe.topic_ex,mqe.condition,mqe.function,mqe.value  FROM `mqttexecut` as mqe
@@ -594,7 +594,6 @@ def print_titreTopic(mydb):
     for topic in myresult:
         for item in topic:
             text.append(item)
-
     return text
 
 
@@ -638,8 +637,9 @@ def add_mqtt_param(mydb,separation_socket,name, param):
         mycursor = mydb.cursor()
         mycursor.execute(sql)
         mydb.commit()
+        myresult = liste_param(mydb,"", name)
         return (
-            f"added{separation_socket}l'ajout du param : ok"
+            f"added{separation_socket}{myresult}"
         )
 
     except mydb.connector.errors.IntegrityError as e:
@@ -669,9 +669,10 @@ def update_mqtt_param(mydb,separation_socket,jsonVal):
             print(sql)
         mycursor = mydb.cursor()
         mycursor.execute(sql)
+        myresult = liste_param(mydb,keyandval['id_param'])
         mydb.commit()
         return (
-            f"updated{separation_socket}mise a jour du param : ok"
+            f"updated{separation_socket}{myresult}"
         )
     except mydb.connector.errors.IntegrityError as e:
         return f"erreur_{separation_socket}{e}"
@@ -691,11 +692,16 @@ def deleted_param(mydb,separation_socket,id):
         return f"erreur_{separation_socket}{e}"
 
 
-def liste_param(mydb):
+def liste_param(mydb, id = "", name = ""):
     mycursor = mydb.cursor()
-    mycursor.execute(
-        "SELECT id_param,name_param,param FROM `mqttparam`"
-    )
+    if name != "":
+        sql = f"SELECT id_param,name_param,param FROM `mqttparam` WHERE `name_param` = '{name}'"
+        print(sql)
+    if id != "":
+        sql = f"SELECT id_param,name_param,param FROM `mqttparam` WHERE `id_param` = {id}"
+    elif id == "" and name == "":
+        sql = "SELECT id_param,name_param,param FROM `mqttparam`"
+    mycursor.execute(sql)
     myresult = mycursor.fetchall()
     dis = []
     if myresult != []:
