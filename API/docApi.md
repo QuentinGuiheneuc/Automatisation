@@ -5,8 +5,12 @@
 ### param
 
 - GET
+
   - Return
+
   ```js
+  /param
+
   [
       {
           "id_param": 1,
@@ -18,16 +22,40 @@
       ...
   ]
   ```
+
+  ```js
+  /param/:id
+
+  [
+     {
+         "id_param": 1,
+         "name_param": "wleds",
+         "param": {
+             "value": 280
+         }
+     }
+  ]
+  ```
+
 - POST
 
   ```js
-    param: {"id_param": 1, "name_param": "wleds", "param": {"value": 280}
+    param: {
+      "name_param": "wleds",
+      "param": {"value": 280}
+      }
   ```
 
   - Return
 
     ```js
-    l'ajout du param : ok
+    [
+      {
+        id_param: 24,
+        name_param: "qtcg",
+        param: {},
+      },
+    ];
     ```
 
 - PATCH
@@ -37,16 +65,24 @@
   ```
 
   - Return
+    mise a jour du param
 
-  ```
-    mise a jour du param : ok
+  ```js
+  [
+    {
+      id_param: 8,
+      name_param: "wledtyty",
+      param: {},
+    },
+  ];
   ```
 
 - DELETE
-  ```js
-  ?id=1
-  ```
+
   - Return
+
   ```js
+  /param/:id
+
   param supprimer : ok
   ```
