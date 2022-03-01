@@ -21,7 +21,6 @@ app.get("/topic", (req, res, next) => {
     client
       .objetTopic(`${req.query.cache}/#`)
       .then((value) => {
-        console.log("azertyu");
         res.send(value);
       })
       .catch((err) => {
@@ -34,7 +33,6 @@ app.get("/topic", (req, res, next) => {
     client
       .listsTopic()
       .then((value) => {
-        console.log("azertyu");
         res.send(value);
       })
       .catch((err) => {
@@ -48,55 +46,47 @@ app.get("/client", (req, res, next) => {
   client
     .listsClient()
     .then((value) => {
-      console.log("azertyu");
       res.send(value);
     })
     .catch((err) => {
       res.status(err);
       res.end();
     });
-  //res.send("bienvunue");
 });
 app.get("/cache", (req, res, next) => {
   client
     .listsCache()
     .then((value) => {
-      console.log("azertyu");
       res.send(value);
     })
     .catch((err) => {
       res.status(err);
       res.end();
     });
-  //res.send("bienvunue");
 });
-
 app.get("/is", (req, res, next) => {
   client
     .objetIsCo()
     .then((value) => {
-      console.log("azertyu");
       res.send(value);
     })
     .catch((err) => {
       res.status(err);
       res.end();
     });
-  //res.send("bienvunue");
 });
 app.get("/exe", (req, res, next) => {
   client
     .listsExecute()
     .then((value) => {
-      console.log("azertyu");
       res.send(value);
     })
     .catch((err) => {
       res.status(err);
       res.end();
     });
-  //res.send("bienvunue");
 });
+
 app.get("/param", (req, res, next) => {
   client
     .listeParam()
@@ -107,9 +97,19 @@ app.get("/param", (req, res, next) => {
       res.status(err);
       res.end();
     });
-  //res.send("bienvunue");
 });
-
+app.get("/param/:id", (req, res, next) => {
+  console.log(req.params.id);
+  client
+    .listeParam(req.params.id)
+    .then((value) => {
+      res.send(value);
+    })
+    .catch((err) => {
+      res.status(err);
+      res.end();
+    });
+});
 app.post("/param", (req, res, next) => {
   console.log(req.body.param);
   client
@@ -121,7 +121,6 @@ app.post("/param", (req, res, next) => {
       res.status(err);
       res.end();
     });
-  //res.send("bienvunue");
 });
 
 app.patch("/param", (req, res, next) => {
@@ -135,13 +134,12 @@ app.patch("/param", (req, res, next) => {
       res.status(err);
       res.end();
     });
-  //res.send("bienvunue");
 });
 
-app.delete("/param", (req, res, next) => {
-  console.log(req.query.id);
+app.delete("/param/:id", (req, res, next) => {
+  console.log(req.param.id);
   client
-    .delParam(req.query.id)
+    .delParam(req.param.id)
     .then((value) => {
       res.send(value);
     })
@@ -149,7 +147,6 @@ app.delete("/param", (req, res, next) => {
       res.status(err);
       res.end();
     });
-  //res.send("bienvunue");
 });
 
 async function db(sql) {

@@ -291,7 +291,7 @@ class mqttSocker {
   };
 
   /**
-   * @params {name:"",param:{}}
+   * @params {name_param:"",param:{}}
    * @return String
    */
   addParam = (bodyParam) => {
@@ -300,7 +300,7 @@ class mqttSocker {
       const sock = s.sok();
       const params = JSON.parse(bodyParam);
       const stringEvoie = `add${this.separation}param${this.separation}${
-        params.name
+        params.name_param
       }${this.separation}${JSON.stringify(params.param)}`;
       console.log(stringEvoie);
       sock.write(stringEvoie);
@@ -324,12 +324,12 @@ class mqttSocker {
    *
    * @return array[{objet}]
    */
-  listeParam = () => {
+  listeParam = (id = None) => {
     return new Promise((resolve, reject) => {
       const s = new sok(this.host, this.port);
       const sock = s.sok();
 
-      sock.write(`list${this.separation}param`);
+      sock.write(`list${this.separation}param${this.separation}${id}`);
       //console.log(sock);
       sock.on("data", (chunk) => {
         console.log(chunk);
