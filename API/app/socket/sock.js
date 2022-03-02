@@ -226,11 +226,11 @@ class mqttSocker {
    * return objet of MQTT Execut
    * @return array[{objet}]
    */
-  listsExecute = () => {
+  listsAutom = () => {
     return new Promise((resolve, reject) => {
       const s = new sok(this.host, this.port);
       const sock = s.sok();
-      sock.write(`list${this.separation}execute`);
+      sock.write(`list${this.separation}autom`);
       //console.log(sock);
       sock.on("data", (chunk) => {
         console.log(chunk);
@@ -246,6 +246,31 @@ class mqttSocker {
       });
     });
   };
+  /**
+   * return objet of MQTT Execut
+   * @return array[{objet}]
+   */
+  addAutom = () => {
+    return new Promise((resolve, reject) => {
+      const s = new sok(this.host, this.port);
+      const sock = s.sok();
+      sock.write(`add${this.separation}autom`);
+      //console.log(sock);
+      sock.on("data", (chunk) => {
+        console.log(chunk);
+        let value = this.ertement(chunk);
+        if (value) {
+          resolve(value);
+        } else {
+          reject(this.err);
+        }
+      });
+      sock.on("error", function (err) {
+        reject(err);
+      });
+    });
+  };
+
   /**
    * return objet of MQTT Topic
    * @return array[{objet}]
@@ -291,7 +316,7 @@ class mqttSocker {
   };
 
   /**
-   * @params {name_param:"",param:{}}
+   * @params Objet {name_param:"",param:{}}
    * @return String
    */
   addParam = (bodyParam) => {
@@ -321,10 +346,10 @@ class mqttSocker {
   };
 
   /**
-   *
+   * @param id  id = ""
    * @return array[{objet}]
    */
-  listeParam = (id = None) => {
+  listeParam = (id = "") => {
     return new Promise((resolve, reject) => {
       const s = new sok(this.host, this.port);
       const sock = s.sok();
@@ -347,7 +372,7 @@ class mqttSocker {
   };
 
   /**
-   * @params {id: 1, name_param: "", param: {}} Objet
+   * @params Objet {id: 1, name_param: "", param: {}}
    * @return String
    */
   updeteParam = (params) => {
@@ -381,6 +406,112 @@ class mqttSocker {
       const sock = s.sok();
 
       sock.write(`del${this.separation}param${this.separation}${id}`);
+      //console.log(sock);
+      sock.on("data", (chunk) => {
+        console.log(chunk);
+        let value = this.ertement(chunk);
+        if (value) {
+          resolve(value);
+        } else {
+          reject(this.err);
+        }
+      });
+      sock.on("error", function (err) {
+        reject(err);
+      });
+    });
+  };
+
+  /**
+   * @params Objet {name_param:"",param:{}}
+   * @return String
+   */
+  addExe = (bodyParam) => {
+    return new Promise((resolve, reject) => {
+      const s = new sok(this.host, this.port);
+      const sock = s.sok();
+      const params = JSON.parse(bodyParam);
+      const stringEvoie = `add${this.separation}exe${
+        this.separation
+      }${JSON.stringify(params)}`;
+      console.log(stringEvoie);
+      sock.write(stringEvoie);
+      //console.log(sock);
+      sock.on("data", (chunk) => {
+        console.log(chunk);
+        let value = this.ertement(chunk);
+        if (value) {
+          resolve(value);
+        } else {
+          reject(this.err);
+        }
+      });
+      sock.on("error", function (err) {
+        reject(err);
+      });
+    });
+  };
+
+  /**
+   * @param id  id = ""
+   * @return array[{objet}]
+   */
+  listeExe = (id = "") => {
+    return new Promise((resolve, reject) => {
+      const s = new sok(this.host, this.port);
+      const sock = s.sok();
+
+      sock.write(`list${this.separation}exe${this.separation}${id}`);
+      //console.log(sock);
+      sock.on("data", (chunk) => {
+        console.log(chunk);
+        let value = this.ertement(chunk);
+        if (value) {
+          resolve(value);
+        } else {
+          reject(this.err);
+        }
+      });
+      sock.on("error", function (err) {
+        reject(err);
+      });
+    });
+  };
+
+  /**
+   * @params Objet {id: 1, name_param: "", param: {}}
+   * @return String
+   */
+  updeteExe = (params) => {
+    return new Promise((resolve, reject) => {
+      const s = new sok(this.host, this.port);
+      const sock = s.sok();
+      sock.write(`update${this.separation}exe${this.separation}${params}`);
+      //console.log(sock);
+      sock.on("data", (chunk) => {
+        console.log(chunk);
+        let value = this.ertement(chunk);
+        if (value) {
+          resolve(value);
+        } else {
+          reject(this.err);
+        }
+      });
+      sock.on("error", function (err) {
+        reject(err);
+      });
+    });
+  };
+  /**
+   * @param id Int
+   * @return String
+   */
+  delExe = (id) => {
+    return new Promise((resolve, reject) => {
+      const s = new sok(this.host, this.port);
+      const sock = s.sok();
+
+      sock.write(`del${this.separation}exe${this.separation}${id}`);
       //console.log(sock);
       sock.on("data", (chunk) => {
         console.log(chunk);
