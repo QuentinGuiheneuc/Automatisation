@@ -75,9 +75,21 @@ app.get("/is", (req, res, next) => {
       res.end();
     });
 });
-app.get("/exe", (req, res, next) => {
+app.get("/autom", (req, res, next) => {
   client
-    .listsExecute()
+    .listsAutom()
+    .then((value) => {
+      res.send(value);
+    })
+    .catch((err) => {
+      res.status(err);
+      res.end();
+    });
+});
+
+app.get("/autom", (req, res, next) => {
+  client
+    .listsAutom()
     .then((value) => {
       res.send(value);
     })
@@ -140,6 +152,68 @@ app.delete("/param/:id", (req, res, next) => {
   console.log(req.param.id);
   client
     .delParam(req.param.id)
+    .then((value) => {
+      res.send(value);
+    })
+    .catch((err) => {
+      res.status(err);
+      res.end();
+    });
+});
+
+app.get("/exe", (req, res, next) => {
+  client
+    .listeExe()
+    .then((value) => {
+      res.send(value);
+    })
+    .catch((err) => {
+      res.status(err);
+      res.end();
+    });
+});
+app.get("/exe/:id", (req, res, next) => {
+  console.log(req.params.id);
+  client
+    .listeExe(req.params.id)
+    .then((value) => {
+      res.send(value);
+    })
+    .catch((err) => {
+      res.status(err);
+      res.end();
+    });
+});
+app.post("/exe", (req, res, next) => {
+  console.log(req.body.param);
+  client
+    .addExe(req.body.param)
+    .then((value) => {
+      res.send(value);
+    })
+    .catch((err) => {
+      res.status(err);
+      res.end();
+    });
+});
+
+app.patch("/exe", (req, res, next) => {
+  console.log(req.body.param);
+  client
+    .updeteExe(req.body.param)
+    .then((value) => {
+      res.send(value);
+    })
+    .catch((err) => {
+      res.status(err);
+      res.end();
+    });
+});
+
+app.delete("/exe/:id", (req, res, next) => {
+  console.log(req.param.id);
+  client
+    .delExe(req.param.id)
     .then((value) => {
       res.send(value);
     })
