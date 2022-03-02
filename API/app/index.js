@@ -89,8 +89,9 @@ app.get("/autom", (req, res, next) => {
 });
 
 app.get("/autom/:id", (req, res, next) => {
+  console.log(req.params.id);
   client
-    .listsAutom(req.param.id)
+    .listsAutom(req.params.id)
     .then((value) => {
       res.send(value);
     })
@@ -117,19 +118,6 @@ app.patch("/autom", (req, res, next) => {
   console.log(req.body.param);
   client
     .updeteAutom(req.body.param)
-    .then((value) => {
-      res.send(value);
-    })
-    .catch((err) => {
-      res.status(err);
-      res.end();
-    });
-});
-
-app.delete("/autom/:id", (req, res, next) => {
-  console.log(req.param.id);
-  client
-    .delAutom(req.param.id)
     .then((value) => {
       res.send(value);
     })
@@ -189,9 +177,9 @@ app.patch("/param", (req, res, next) => {
 });
 
 app.delete("/param/:id", (req, res, next) => {
-  console.log(req.param.id);
+  console.log(req.params.id);
   client
-    .delParam(req.param.id)
+    .delParam(req.params.id)
     .then((value) => {
       res.send(value);
     })
@@ -251,9 +239,9 @@ app.patch("/exe", (req, res, next) => {
 });
 
 app.delete("/exe/:id", (req, res, next) => {
-  console.log(req.param.id);
+  console.log(req.params.id);
   client
-    .delExe(req.param.id)
+    .delExe(req.params.id)
     .then((value) => {
       res.send(value);
     })
