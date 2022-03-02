@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from ast import Return
 import json
 import random
 import datetime
@@ -266,7 +267,7 @@ def listeObjet(bbd, message):
 
 def liste_code_in(bbd, code_in):
     mycursor = bbd.cursor()
-    mycursor.execute("SELECT code_in FROM `mqttexecut`")
+    mycursor.execute("SELECT code_in FROM `mqttautom`")
     myresult = mycursor.fetchall()
     liste = []
     for result in myresult:
@@ -329,13 +330,14 @@ def add_client_att(bdd, uid, name=""):
 def recherche_execute(bdd, allTopic):
 
     rek = """
-            SELECT id,mqc_e.client,mqc.client,mqe.topic_ex,mqe.condition,mqe.function,mqe.value  FROM `mqttexecut` as mqe 
+            SELECT id,mqc_e.client,mqc.client,mqe.topic_ex,mqe.condition,mqe.function,mqe.value,mqc.uid,mqc_e.uid  FROM `mqttautom` as mqe 
             INNER JOIN `mqttclient` as mqc ON mqe.client_id_in = mqc.id_client
             INNER JOIN `mqttclient` as mqc_e ON mqe.client_id_ex = mqc_e.id_client 
             WHERE mqe.topic_in = '{0}'
         """.format(
         allTopic
     )
+
     mycursor = bdd.cursor()
     mycursor.execute(rek)
     myresult = mycursor.fetchall()
@@ -351,10 +353,12 @@ def recherche_execute(bdd, allTopic):
                 "id": line[0],
                 "client_1": line[1],
                 "client_2": line[2],
-                "topic_ex": line[3],
+                "topic_ex": line[3].replace("uid", line[8]),
                 "condition": line[4],
                 "function": line[5],
                 "value": value,
+                "uid_in":  line[7],
+                "uid_ex": line[8],
             }
             dis[str(i)] = dis_1
             i = i + 1
@@ -406,7 +410,7 @@ def swich(bdd,value):
         copievaluesta = 0
         mycursor = bdd.cursor()
         mycursor.execute(
-            "UPDATE `mqttexecut` SET `value` = ? WHERE `id` = ?",
+            "UPDATE `mqttautom` SET `value` = ? WHERE `id` = ?",
             (copievaluesta, id),
         )
         bdd.commit()
@@ -415,7 +419,7 @@ def swich(bdd,value):
         copievaluesta = 1
         mycursor = bdd.cursor()
         mycursor.execute(
-            "UPDATE `mqttexecut` SET `value` = ? WHERE `id` = ?",
+            "UPDATE `mqttautom` SET `value` = ? WHERE `id` = ?",
             (copievaluesta, id),
         )
         bdd.commit()
@@ -460,37 +464,11 @@ def affiche_list_function(function):
     dis_2["mod"] = dis
     return json.dumps(dis_2)
 
-# a refaire
-def add_execut(
-    bdd,
-    separation_socket,
-    code_in="",
-    code_ex="",
-    topic_in="",
-    topic_ex="",
-    id_client_in="",
-    id_client_ex="",
-    condition="",
-    function_="",
-):
-    try:
-        sql = f"""INSERT INTO mqttexecut (code_in,code_ex,topic_in,topic_ex,id_client_in,id_client_ex,condition,function) 
-        VALUES ('{code_in}','{code_ex}','{topic_in}','{topic_ex}',(SELECT id_client FROM `mqttclient` WHERE client = '{id_client_in}'),
-        (SELECT id_client FROM `mqttclient` WHERE client = '{id_client_ex}'),'{condition}','{affiche_list_function(function_)}')"""
-        mycursor = bdd.cursor()
-        mycursor.execute(sql)
-        
-        return (
-            f"exe{separation_socket}l'excution Mqtt Ajouter"
-        )
-    except bdd.connector.errors.IntegrityError as e:
-        return f"erreur_{separation_socket}{e}"
-
 
 
 def function_Update(bdd, id, object):
     print(
-        f"UPDATE `mqttexecut` SET `function`='{json.dumps(object)}' WHERE id = {int(id)}"
+        f"UPDATE `mqttautom` SET `function`='{json.dumps(object)}' WHERE id = {int(id)}"
     )
 
 
@@ -515,7 +493,6 @@ def liste_client(mydb):
         }
         dis.append(dis_1);
     return json.dumps(dis)
-
 
 
 def liste_cache(mydb):
@@ -549,12 +526,17 @@ def liste_topic(mydb):
         dis.append(dis_1);
     return json.dumps(dis)
 
+
+
 # a voire
-def liste_execute(mydb):
-    rek = """
-            SELECT id,mqc.client,mqc_e.client,mqe.topic_in,mqe.topic_ex,mqe.condition,mqe.function,mqe.value  FROM `mqttexecut` as mqe
+def liste_autom(mydb,id_=""):
+    sqlValue = ""
+    if id_ != "":
+         sqlValue = sqlValue + f" WHERE id = {id_}"
+    rek = f"""
+            SELECT id,mqc.client,mqc_e.client,mqe.topic_in,mqe.topic_ex,mqe.condition,mqe.function,mqe.value,mqc.uid,mqc_e.uid   FROM `mqttautom` as mqe
             INNER JOIN `mqttclient` as mqc_e ON mqe.client_id_ex = mqc_e.id_client 
-            INNER JOIN `mqttclient` as mqc ON mqe.client_id_in = mqc.id_client
+            INNER JOIN `mqttclient` as mqc ON mqe.client_id_in = mqc.id_client {sqlValue}
         """
     mycursor = mydb.cursor()
     mycursor.execute(rek)
@@ -570,17 +552,96 @@ def liste_execute(mydb):
                 "id": line[0],
                 "client_1": line[1],
                 "client_2": line[2],
-                "topic_in": line[3],
-                "topic_ex" : line[4],
+                "topic_in": line[3].replace("uid", line[8]),
+                "topic_ex" : line[4].replace("uid", line[9]),
                 "condition": json.loads(line[5]),
                 "function": line[6],
                 "value": value,
+                "uid_in":  line[8],
+                "uid_ex": line[9],
             }
             dis.append(dis_1)
         # print(dis)
         return json.dumps(dis)
     else:
         return json.dumps({"status" : 500, "message" : "pas de donne ou passe pas !"})
+
+
+# a refaire
+def add_autom(
+    bdd,
+    separation_socket,
+    jsonString
+):
+    json_ = json.loads(jsonString)
+    try:
+        sql = f"SELECT id_client,uid FROM `mqttclient` WHERE client = '{json_['id_client_in']}'"
+        mycursor = bdd.cursor()
+        mycursor.execute(sql)
+        myresult_client_in = mycursor.fetchall()
+
+    except bdd.connector.errors.IntegrityError as e:
+        return f"erreur_{separation_socket}{e}"
+    try:
+        sql = f"SELECT id_client,uid FROM `mqttclient` WHERE client = '{json_['id_client_ex']}'"
+        mycursor = bdd.cursor()
+        mycursor.execute(sql)
+        myresult_client_ex = mycursor.fetchall()
+    except bdd.connector.errors.IntegrityError as e:
+        return f"erreur_{separation_socket}{e}"
+    
+    try:
+        sql = f"""INSERT INTO mqttautom (topic_in,topic_ex,id_client_in,id_client_ex,condition,function) 
+        VALUES ('{json_['topic_in']}','{json_['topic_ex']}',(SELECT id_client FROM `mqttclient` WHERE client = '{json_['id_client_in']}'),
+        (SELECT id_client FROM `mqttclient` WHERE client = '{json_['id_client_ex']}'),'{json_['condition']}','{affiche_list_function(json_['function_'])}')"""
+        mycursor = bdd.cursor()
+        mycursor.execute(sql)
+        bdd.commit()
+        return (
+            f"added{separation_socket}exe "
+        )
+    except bdd.connector.errors.IntegrityError as e:
+        return f"erreur_{separation_socket}{e}"
+
+
+def update_autom(bdd,payload):
+    json_ = json.loads(payload)
+    sqlValue = ""
+    if json_['topic_in'] != "":
+        sqlValue = sqlValue + f"`topic_in` = '{json_['topic_in']}',"
+    if json_['topic_ex'] != "":
+        sqlValue = sqlValue + f"`topic_ex` = '{json_['topic_ex']}',"
+    if json_['id_client_in'] != "":
+        sqlValue = sqlValue + f"`id_client_in` = '{json_['id_client_in']}',"
+    if json_['id_client_ex'] != "":
+        sqlValue = sqlValue + f"`id_client_ex` = '{json_['id_client_ex']}',"
+    if json_['condition'] != "":
+        sqlValue = sqlValue + f"`condition` = {json.dumps(json_['condition'])},"
+    if json_['condition'] != "":
+        sqlValue = sqlValue + f"`function` = {affiche_list_function(json['function_'])},"
+    
+    try:
+        sql = f"UPDATE `mqttautom` SET {sqlValue} WHERE `id` = {json_['id']}"
+        mycursor = bdd.cursor()
+        mycursor.execute(sql)
+        bdd.commit()
+        return liste_autom(bdd, json_['id'])
+    except bdd.connector.errors.IntegrityError as e:
+        return f"erreur_"
+
+
+
+def deleted_autom(mydb,separation_socket,id):
+    try:
+        sql = f"DELETE FROM `mqttautom` WHERE {id}"
+        mycursor = mydb.cursor()
+        mycursor.execute(sql)
+        mydb.commit()
+        return (
+            f"exe{separation_socket}l'excution Mqtt Ajouter"
+        )
+    except mydb.connector.errors.IntegrityError as e:
+        return f"erreur_{separation_socket}{e}"
 
 
 def print_titreTopic(mydb):
@@ -597,7 +658,7 @@ def print_titreTopic(mydb):
     return text
 
 
-def cache_topic(mydb, topic, separation):
+def cache_topic(mydb, topic):
     mycursor = mydb.cursor()
     mycursor.execute(
         f"SELECT (SELECT client FROM `mqttclient` WHERE id_client =  mqca.id_client ) ,  mqca.ressult FROM mqttcache as mqca WHERE mqca.id_topic = (SELECT `id_topic` FROM `mqtttopic` WHERE `topic` = '{topic}')"
@@ -630,6 +691,14 @@ def is_exists_client(mydb, client):
         return True
 
 
+def concat_liste(list):
+    valueReturn = ""
+    for value in list:
+        valueReturn = valueReturn + value
+        print(valueReturn)
+    return valueReturn
+
+
 def add_mqtt_param(mydb,separation_socket,name, param):
     try:
         sql = f"INSERT INTO `mqttparam` (`name_param`,`param`) VALUES ('{name}','{param}')"
@@ -644,13 +713,6 @@ def add_mqtt_param(mydb,separation_socket,name, param):
 
     except mydb.connector.errors.IntegrityError as e:
         return f"erreur_{separation_socket}{e}"
-
-def concat_liste(list):
-    valueReturn = ""
-    for value in list:
-        valueReturn = valueReturn + value
-        print(valueReturn)
-    return valueReturn
 
 
 def update_mqtt_param(mydb,separation_socket,jsonVal):
@@ -712,5 +774,79 @@ def liste_param(mydb, id = "", name = ""):
         mydb.commit()
         return json.dumps(dis)
     else:
-
         return json.dumps({"status" : 500, "message" : "pas de donne ou passe pas !"})
+
+
+
+def liste_exe(mydb,id = "", id_client_ = ""):
+    try:
+        if id != "":
+            sql = f"SELECT id_exe,id_client,exe FROM `mqttexe` WHERE `id_exe` = {id}"
+        elif id_client_ != "":
+            sql = f"SELECT id_exe,id_client,exe FROM `mqttexe` WHERE `id_client` = {id_client_}"
+        elif id_client_ == "" and id == "":
+            sql = "SELECT id_exe,id_client,exe FROM `mqttexe`"
+        mycursor = mydb.cursor()
+        mycursor.execute(sql)
+        myresult = mycursor.fetchall()
+        dis = []
+        if myresult != []:
+            for line in myresult:
+                dis_1 = {"id": line[0], "id_client": line[1], "exe": json.loads(line[2])}
+                dis.append(dis_1);
+        print(json.dumps(dis))
+        return json.dumps(dis)
+    except mydb.connector.errors.IntegrityError as e:
+        return e
+
+
+def add_exe(mydb,separation_socket,payload):
+    data = json.loads(payload)
+    id_client = data["id_client"]
+    exe_ = json.dumps(data["exe"])
+    try:
+        sql = f"INSERT INTO `mqttexe` (`id_client`,`exe`) VALUES ('{id_client}','{exe_}')"
+        print(sql)
+        mycursor = mydb.cursor()
+        mycursor.execute(sql)
+        mydb.commit()
+        myresult = liste_exe(mydb,"",id_client)
+        return (
+            f"added{separation_socket}{myresult}"
+        )
+    except mydb.connector.errors.IntegrityError as e:
+        return f"erreur_{separation_socket}{e}"
+
+
+def update_exe(mydb,separation_socket,payload):
+    data = json.loads(payload)
+    valuesql = ""
+    if data["id_client"] != "":
+        valuesql = valuesql + f"`id_client` = '{valuesql['id_client']}',"
+    if data["exe"] != "":
+        valuesql = valuesql + f"`exe` = '{valuesql['exe']}',"
+    try:
+        sql = f"UPDATE `mqttexe` SET {valuesql} WHERE `id_exe` = {data['id_exe']}"
+        print(sql)
+        mycursor = mydb.cursor()
+        mycursor.execute(sql)
+        mydb.commit()
+        myresult = liste_exe(mydb,data['id_exe'])
+        return (
+            f"update{separation_socket}{myresult}"
+        )
+    except mydb.connector.errors.IntegrityError as e:
+        return f"erreur_{separation_socket}{e}"
+
+
+def deleted_exe(mydb,separation_socket,id):
+    try:
+        sql = f"DELETE FROM `mqttexe` WHERE `id_exe` = {id}"
+        mycursor = mydb.cursor()
+        mycursor.execute(sql)
+        mydb.commit()
+        return (
+            f"delete{separation_socket}param supprimer : ok"
+        )
+    except mydb.connector.errors.IntegrityError as e:
+        return f"erreur_{separation_socket}{e}"

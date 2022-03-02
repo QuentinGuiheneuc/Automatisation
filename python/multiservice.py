@@ -206,14 +206,20 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                             conn.sendall(f"list{separation_socket}{actions.liste_cache(mydb)}".encode(encode_socket))
                         if action_1 == "attclient":
                             conn.sendall(f"list{separation_socket}{actions.affiche_client_att(mydb)}".encode(encode_socket))
-                        if action_1 == "execute":
-                            exe = actions.liste_execute(mydb)
-                            print("Execute" ,exe)
+                        if action_1 == "autom":
+                            id_ = slipte[2]
+                            exe = actions.liste_autom(mydb,id_)
+                            print("autom" ,exe)
                             conn.sendall(f"list{separation_socket}{exe}".encode(encode_socket))
                         if action_1 == "param":
                             id = slipte[2]
                             listParam = actions.liste_param(mydb,id)
                             conn.sendall(f"list{separation_socket}{listParam}".encode(encode_socket))
+                        if action_1 == "exe":
+                            id = slipte[2]
+                            listexe = actions.liste_exe(mydb,id)
+                            conn.sendall(f"list{separation_socket}{listexe}".encode(encode_socket))
+
                     if action == "server":
                         if action_1 == "start":
                             is_start = True                            
@@ -276,14 +282,21 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                             name = slipte[3]
                             topic = slipte[4]
                             conn.sendall(f"{actions.add_client(mydb,separation_socket,name,uid,topic)}".encode(encode_socket))
-                        if action_1 == "fkfk":
-                            print()
+                        if action_1 == "autom":
+                            uid = slipte[2]
+                            name = slipte[3]
+                            topic = slipte[4]
+                            conn.sendall(f"{actions.add_client(mydb,separation_socket,name,uid,topic)}".encode(encode_socket))
                         if action_1 == "param":
                             name = str(slipte[2])
                             param_json = slipte[3]
                             value = actions.add_mqtt_param(mydb,separation_socket, name, param_json)
                             print(name,param_json)
-                            conn.sendall(f"{value}".encode(encode_socket))                            
+                            conn.sendall(f"{value}".encode(encode_socket)) 
+                        if action_1 == "exe":
+                            exe_json = slipte[2]
+                            value = actions.add_exe(mydb,separation_socket,exe_json)
+                            conn.sendall(f"{value}".encode(encode_socket))                          
 
                     if action == "update":
                         if action_1 == "clientname":
@@ -293,8 +306,16 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                         if action_1 == "param":
                             jsonVal = slipte[2]
                             conn.sendall(f"{actions.update_mqtt_param(mydb,separation_socket,jsonVal)}".encode(encode_socket))
+                        if action_1 == "exe":
+                            jsonVal = slipte[2]
+                            conn.sendall(f"{actions.update_exe(mydb,separation_socket,jsonVal)}".encode(encode_socket))
                     if action == "del":
                         if action_1 == "param":
                             id = slipte[2]
-                            conn.sendall(f"{actions.deleted_param(mydb,separation_socket,id)}".encode(encode_socket))      
-                
+                            conn.sendall(f"{actions.deleted_param(mydb,separation_socket,id)}".encode(encode_socket))   
+                        if action_1 == "autom":
+                            id = slipte[2]
+                            conn.sendall(f"{actions.deleted_autom(mydb,separation_socket,id)}".encode(encode_socket))
+                        if action_1 == "exe":
+                            id = slipte[2]
+                            conn.sendall(f"{actions.deleted_exe(mydb,separation_socket,id)}".encode(encode_socket))
