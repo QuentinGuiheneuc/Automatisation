@@ -86,3 +86,256 @@
 
   param supprimer : ok
   ```
+
+### autom
+
+- GET
+
+  - Return
+
+  ```js
+  /autom
+
+  [
+      {
+      "id": 1,
+      "id_client_in": "mqtt_Temps_Salon",
+      "id_client_ex": "mqtt_test1",
+      "topic_in": "prise",
+      "topic_ex": "eclairage",
+      "condition": {
+        "humiditte": {
+          "condition": "<",
+          "value": "21"
+          }
+      },
+      "function": "swich",
+      "value": false,
+      "uid_in": "1523698745",
+      "uid_ex": "7894561230"
+      },
+      ...
+  ]
+  ```
+
+  ```js
+  /autom/:id
+
+  [
+      {
+        "id": 1,
+        "id_client_in": "mqtt_Temps_Salon",
+        "id_client_ex": "mqtt_test1",
+        "topic_in": "prise",
+        "topic_ex": "eclairage",
+        "condition": {
+          "humiditte": {
+            "condition": "<",
+            "value": "21"
+            }
+        },
+        "function": "swich",
+        "value": false,
+        "uid_in": "1523698745",
+        "uid_ex": "7894561230"
+      }
+  ]
+  ```
+
+- POST
+
+  ```js
+  /autom
+    param: {
+      "id_client_in": "mqtt_Temps_Salon",
+      "id_client_ex": "mqtt_test1",
+      "topic_in": "prise",
+      "topic_ex": "eclairage",
+      "condition": {
+        "humiditte": {
+          "condition": "<",
+          "value": "21"
+          }
+      },
+      "function": "swich",
+      "value": false,
+      "uid_in": "1523698745",
+      "uid_ex": "7894561230"
+      }
+  ```
+
+  - Return
+
+    ```js
+    [
+      {
+        id: 8,
+        id_client_in: "mqtt_Temps_Salon",
+        id_client_ex: "mqtt_test1",
+        topic_in: "prise",
+        topic_ex: "eclairage",
+        condition: {
+          humiditte: {
+            condition: "<",
+            value: "21",
+          },
+        },
+        function: "swich",
+        value: false,
+        uid_in: "1523698745",
+        uid_ex: "7894561230",
+      },
+    ];
+    ```
+
+- PATCH
+
+  ```js
+  /autom
+  param: {
+      "id": 1,
+      "id_client_in": "mqtt_Temps_Salon",
+      "id_client_ex": "mqtt_test1",
+      "topic_in": "prise",
+      "topic_ex": "eclairage",
+      "condition": {
+      "humiditte": {
+        "condition": "<",
+        "value": "21"
+        }
+      },
+      "function": "swich",
+      "value": false,
+      "uid_in": "1523698745",
+      "uid_ex": "7894561230"
+      }
+  ```
+
+  - Return
+
+    ```js
+    [
+      {
+        id: 1,
+        id_client_in: "mqtt_Temps_Salon",
+        id_client_ex: "mqtt_test1",
+        topic_in: "prise",
+        topic_ex: "eclairage",
+        condition: {
+          humiditte: {
+            condition: "<",
+            value: "21",
+          },
+        },
+        function: "swich",
+        value: false,
+        uid_in: "1523698745",
+        uid_ex: "7894561230",
+      },
+    ];
+    ```
+
+  ```
+
+  ```
+
+- DELETE
+
+  - Return
+
+    ```js
+      /autom/:id
+
+      autom supprimer : ok
+    ```
+
+### exe
+
+- GET
+
+  - Return
+
+  ```js
+  /autom
+
+  [
+    {
+      "id": 1,
+      "id_client": 1,
+      "exe": {}
+    },
+    ...
+  ]
+  ```
+
+  ```js
+  /autom/:id
+
+  [
+    {
+      "id": 1,
+      "id_client": 1,
+      "exe": {}
+    }
+  ]
+  ```
+
+- POST
+
+  ```js
+  /autom
+    param: {
+    "id_client": 1,
+    "exe": {}
+    }
+  ```
+
+  - Return
+
+    ```js
+    [
+      {
+        id: 1,
+        id_client: 1,
+        exe: {},
+      },
+    ];
+    ```
+
+- PATCH
+
+  ```js
+  /autom
+  param:
+  {
+    "id": 1,
+    "id_client": 1,
+    "exe": {}
+  }
+  ```
+
+  - Return
+
+    ```js
+    [
+      {
+        id: 1,
+        id_client: 1,
+        exe: { value: true },
+      },
+    ];
+    ```
+
+  ```
+
+  ```
+
+- DELETE
+
+  - Return
+
+    ```js
+      /autom/:id
+
+      autom supprimer : ok
+    ```
