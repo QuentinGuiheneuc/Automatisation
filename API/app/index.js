@@ -75,6 +75,7 @@ app.get("/is", (req, res, next) => {
       res.end();
     });
 });
+
 app.get("/autom", (req, res, next) => {
   client
     .listsAutom()
@@ -87,9 +88,48 @@ app.get("/autom", (req, res, next) => {
     });
 });
 
-app.get("/autom", (req, res, next) => {
+app.get("/autom/:id", (req, res, next) => {
   client
-    .listsAutom()
+    .listsAutom(req.param.id)
+    .then((value) => {
+      res.send(value);
+    })
+    .catch((err) => {
+      res.status(err);
+      res.end();
+    });
+});
+
+app.post("/autom", (req, res, next) => {
+  console.log(req.body.param);
+  client
+    .addAutom(req.body.param)
+    .then((value) => {
+      res.send(value);
+    })
+    .catch((err) => {
+      res.status(err);
+      res.end();
+    });
+});
+
+app.patch("/autom", (req, res, next) => {
+  console.log(req.body.param);
+  client
+    .updeteAutom(req.body.param)
+    .then((value) => {
+      res.send(value);
+    })
+    .catch((err) => {
+      res.status(err);
+      res.end();
+    });
+});
+
+app.delete("/autom/:id", (req, res, next) => {
+  console.log(req.param.id);
+  client
+    .delAutom(req.param.id)
     .then((value) => {
       res.send(value);
     })

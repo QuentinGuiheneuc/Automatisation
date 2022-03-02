@@ -223,14 +223,15 @@ class mqttSocker {
     });
   };
   /**
-   * return objet of MQTT Execut
+   * return objet of MQTT Autom
+   * @param String id = ""
    * @return array[{objet}]
    */
-  listsAutom = () => {
+  listsAutom = (id = "") => {
     return new Promise((resolve, reject) => {
       const s = new sok(this.host, this.port);
       const sock = s.sok();
-      sock.write(`list${this.separation}autom`);
+      sock.write(`list${this.separation}autom${this.separation}${id}`);
       //console.log(sock);
       sock.on("data", (chunk) => {
         console.log(chunk);
@@ -247,14 +248,14 @@ class mqttSocker {
     });
   };
   /**
-   * return objet of MQTT Execut
+   * return objet of MQTT Autom
    * @return array[{objet}]
    */
-  addAutom = () => {
+  addAutom = (bodyParam) => {
     return new Promise((resolve, reject) => {
       const s = new sok(this.host, this.port);
       const sock = s.sok();
-      sock.write(`add${this.separation}autom`);
+      sock.write(`add${this.separation}autom${this.separation}${bodyParam}`);
       //console.log(sock);
       sock.on("data", (chunk) => {
         console.log(chunk);
@@ -270,7 +271,56 @@ class mqttSocker {
       });
     });
   };
+  /**
+   * @params Objet {id: 1, name_param: "", param: {}}
+   * @return String
+   */
+  updeteAutom = (params) => {
+    return new Promise((resolve, reject) => {
+      const s = new sok(this.host, this.port);
+      const sock = s.sok();
 
+      sock.write(`update${this.separation}autom${this.separation}${params}`);
+      //console.log(sock);
+      sock.on("data", (chunk) => {
+        console.log(chunk);
+        let value = this.ertement(chunk);
+        if (value) {
+          resolve(value);
+        } else {
+          reject(this.err);
+        }
+      });
+      sock.on("error", function (err) {
+        reject(err);
+      });
+    });
+  };
+  /**
+   * @param id Int
+   * @return String
+   */
+  delAutom = (id) => {
+    return new Promise((resolve, reject) => {
+      const s = new sok(this.host, this.port);
+      const sock = s.sok();
+
+      sock.write(`del${this.separation}autom${this.separation}${id}`);
+      //console.log(sock);
+      sock.on("data", (chunk) => {
+        console.log(chunk);
+        let value = this.ertement(chunk);
+        if (value) {
+          resolve(value);
+        } else {
+          reject(this.err);
+        }
+      });
+      sock.on("error", function (err) {
+        reject(err);
+      });
+    });
+  };
   /**
    * return objet of MQTT Topic
    * @return array[{objet}]
@@ -423,7 +473,7 @@ class mqttSocker {
   };
 
   /**
-   * @params Objet {name_param:"",param:{}}
+   * @params Objet {"id_client": 2 , "exe": {}}
    * @return String
    */
   addExe = (bodyParam) => {
@@ -479,7 +529,7 @@ class mqttSocker {
   };
 
   /**
-   * @params Objet {id: 1, name_param: "", param: {}}
+   * @params Objet {id: 1, "client_id" : 2, "exe" : {}}
    * @return String
    */
   updeteExe = (params) => {
