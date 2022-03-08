@@ -70,6 +70,20 @@ class mqttSocker {
           default:
             return null;
         }
+      case "objet":
+        switch (action2) {
+          case "exe":
+            return value;
+            break;
+          case "start":
+            return value;
+            break;
+          case "stop":
+            return value;
+            break;
+          default:
+            return null;
+        }
       case "list":
         return action2;
       case "topic":
@@ -280,7 +294,11 @@ class mqttSocker {
       const s = new sok(this.host, this.port);
       const sock = s.sok();
 
-      sock.write(`update${this.separation}autom${this.separation}${params}`);
+      sock.write(
+        `update${this.separation}autom${this.separation}${JSON.stringify(
+          params
+        )}`
+      );
       //console.log(sock);
       sock.on("data", (chunk) => {
         console.log(chunk);
@@ -577,5 +595,33 @@ class mqttSocker {
       });
     });
   };
+  /**
+   * @param id Int
+   * @param objet
+   * @return String
+   */
+  objetExe = (id, _json) => {
+    return new Promise((resolve, reject) => {
+      const s = new sok(this.host, this.port);
+      const sock = s.sok();
+      sock.write(
+        `objet${this.separation}exe${this.separation}${id}${this.separation}${_json}`
+      );
+      //console.log(sock);
+      sock.on("data", (chunk) => {
+        console.log(chunk);
+        let value = this.ertement(chunk);
+        if (value) {
+          resolve(value);
+        } else {
+          reject(this.err);
+        }
+      });
+      sock.on("error", function (err) {
+        reject(err);
+      });
+    });
+  };
 }
+
 module.exports = mqttSocker;
