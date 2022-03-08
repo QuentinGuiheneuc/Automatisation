@@ -1,0 +1,10 @@
+.btn {
+    transform: translateY(0px);
+    transition: 0.5s transform ease;
+}
+  
+.btn:hover {
+    transform: translateY(-3px);
+    transition: 0.2s transform ease;
+}
+  
