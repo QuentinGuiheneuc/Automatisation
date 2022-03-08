@@ -251,6 +251,19 @@ app.delete("/exe/:id", (req, res, next) => {
     });
 });
 
+app.post("/objetexe", (req, res, next) => {
+  console.log(req.body.param);
+  client
+    .objetexe(req.body.param)
+    .then((value) => {
+      res.send(value);
+    })
+    .catch((err) => {
+      res.status(err);
+      res.end();
+    });
+});
+
 async function db(sql) {
   return new Promise((resolve, reject) => {
     query.db
