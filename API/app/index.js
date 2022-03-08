@@ -7,7 +7,10 @@ const sock = require("./socket/sock.js");
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
+app.use(function (req, res, next) {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  next();
+});
 const client = new sock();
 client.separation = config.socket.serverofpython.separation;
 client.connect(
@@ -254,7 +257,7 @@ app.delete("/exe/:id", (req, res, next) => {
 app.post("/objetexe", (req, res, next) => {
   console.log(req.body.param);
   client
-    .objetexe(req.body.param)
+    .objetExe(req.body.id, req.body.param)
     .then((value) => {
       res.send(value);
     })
