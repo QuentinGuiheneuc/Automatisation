@@ -1,10 +1,16 @@
 const express = require("express");
 const config = require("../config.js");
 const route = require("./router.js");
-const query = require("../db/connexion.js");
 const app = express();
 const sock = require("./socket/sock.js");
 const bodyParser = require("body-parser");
+// const User = require("../db/model/users");
+const bcrypt = require("bcryptjs");
+
+const User = require("../db/model/users");
+
+//myro.objet = object1;
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(function (req, res, next) {
@@ -24,7 +30,7 @@ app.get("/topic", (req, res, next) => {
     client
       .objetTopic(`${req.query.cache}/#`)
       .then((value) => {
-        res.send(value);
+        res.json(value);
       })
       .catch((err) => {
         res.status(500);
@@ -49,7 +55,7 @@ app.get("/client", (req, res, next) => {
   client
     .listsClient()
     .then((value) => {
-      res.send(value);
+      res.json(value);
     })
     .catch((err) => {
       res.status(err);
@@ -259,7 +265,7 @@ app.post("/objetexe", (req, res, next) => {
   client
     .objetExe(req.body.id, req.body.param)
     .then((value) => {
-      res.send(value);
+      res.json(value);
     })
     .catch((err) => {
       res.status(err);
@@ -267,36 +273,49 @@ app.post("/objetexe", (req, res, next) => {
     });
 });
 
-async function db(sql) {
-  return new Promise((resolve, reject) => {
-    query.db
-      .getConnection()
-      .then((conn) => {
-        conn
-          .query(sql)
-          .then((rows) => {
-            resolve(rows);
-            conn.end();
-          })
-          .catch((err) => {
-            reject(400);
-            conn.end();
-          });
+app.get("/users", (req, res, next) => {
+  try {
+    User.findAll()
+      .then((value) => {
+        res.send(value);
       })
       .catch((err) => {
-        reject(401);
+        res.status(501).json({ error: err.message });
+        res.end();
       });
-  });
-}
-
-app.get("/users", (req, res, next) => {
-  const sql = "SELECT id_user,nom,prenom,mail,path_img,type FROM users";
-  db(sql)
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ error: "Something went wrong" });
+  }
+});
+app.get("/users/:id", (req, res, next) => {
+  try {
+    // const allUsers = User.findAll();
+    // res.send(allUsers);
+    User.findOne({ id_user: req.params.id })
+      .then((value) => {
+        res.send(value);
+      })
+      .catch((err) => {
+        res.status(501).json({ error: err });
+        res.end();
+      });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ error: "Something went wrong" });
+  }
+});
+//const passwordHash = bcrypt.hashSync("AtAAF6ArHhoG", 10);
+//console.log(passwordHash);
+app.post("/", (req, res, next) => {
+  //bcrypt.hashSync(params.password, 10);
+  User.verifyPassword({ user: req.body.user, password: req.body.password })
     .then((value) => {
       res.send(value);
+      console.log(value);
     })
     .catch((err) => {
-      res.status(err);
+      res.status(501).json({ error: err });
       res.end();
     });
 });
@@ -310,4 +329,6 @@ app.listen(config.Server.Port, config.Server.Host, () => {
   console.log(
     `app listening at http://${config.Server.Host}:${config.Server.Port}`
   );
+  // User.sync();
+  console.log("server sync");
 });
