@@ -1,4 +1,17 @@
 const config = require("../config.js");
+require("dotenv").config();
+// const { Sequelize } = require("sequelize");
+// const connexion = new Sequelize(
+//   config.BD.Database,
+//   config.BD.User,
+//   config.BD.Password,
+//   {
+//     host: config.BD.Host,
+//     port: config.BD.Port,
+//     dialect: "mariadb",
+//   }
+// );
+// module.export = connexion;
 let db;
 const mariadb = require("mariadb");
 const pool = mariadb.createPool({
@@ -10,27 +23,4 @@ const pool = mariadb.createPool({
   queueLimit: 0,
   connectionLimit: 5,
 });
-const query = (sql) => {
-  let results;
-  pool
-    .getConnection()
-    .then((conn) => {
-      conn
-        .query(sql)
-        .then((rows) => {
-          console.log(rows); //[ {val: 1}, meta: ...
-          results = rows;
-          conn.end();
-        })
-        .catch((err) => {
-          //handle error
-          console.log(err);
-          conn.end();
-        });
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-  return results;
-};
-module.exports = { db: pool };
+module.exports = { pool };
