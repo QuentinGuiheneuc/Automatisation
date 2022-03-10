@@ -38,11 +38,8 @@ class myorm {
     });
   }
   conte = () => {
-    var i = 0;
-    for (const [key, value] of Object.entries(this.shemas_)) {
-      i = i + 1;
-    }
-    return i;
+    var tableauKeys = Object.keys(this.shemas_);
+    return tableauKeys.length;
   };
   /**
    * @param {Objet} objat
@@ -60,7 +57,7 @@ class myorm {
    * @requir {Object} Class.object
    * @returns
    */
-  Craete = async () => {
+  create = async () => {
     return new Promise((resolve, reject) => {
       var i = 0;
       var ValueString = "";
