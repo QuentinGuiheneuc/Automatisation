@@ -63,7 +63,7 @@ class myorm {
       var ValueString = "";
       var KeyString = "";
       for (const [key, value] of Object.entries(this.objet)) {
-        var lth = this.conte() - 1;
+        var lth = this.conte();
         if (key == this.table_.id) {
           continue;
         }
@@ -86,6 +86,7 @@ class myorm {
         ValueString,
         ")"
       );
+      console.log(sql);
       this.queryDB(sql)
         .then((valueSql) => {
           resolve(valueSql);
@@ -206,6 +207,22 @@ class myorm {
         "` = ",
         this.isKey(is, this.table_.id)
       );
+      this.queryDB(sql)
+        .then((valueSql) => {
+          resolve(valueSql);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    });
+  };
+  /**
+   *
+   * @returns
+   */
+  deleteall = async () => {
+    return new Promise((resolve, reject) => {
+      var sql = "DELETE FROM".concat(" `", this.table_.table, "`");
       this.queryDB(sql)
         .then((valueSql) => {
           resolve(valueSql);
