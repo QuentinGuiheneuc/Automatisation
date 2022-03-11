@@ -326,10 +326,6 @@
     ];
     ```
 
-  ```
-
-  ```
-
 - DELETE
 
   - Return
@@ -339,3 +335,133 @@
 
       autom supprimer : ok
     ```
+
+### user
+
+- GET
+  ```
+  /users
+  ```
+  - return
+    ```js
+    [
+      {
+          "id_user": 1,
+          "nom": "Guiheneuc",
+          "prenom": "Quentin",
+          "mail": "guiheneuc.quentin@outlook.fr",
+          "path_img": "/Dashbord/upload/DfkhrO1XUAEYkdw.jpg",
+          "type": "admin"
+      },
+      ...
+    ]
+    ```
+  ```
+  /users/:id
+  ```
+  - return
+    ```js
+    [
+      {
+        id_user: 1,
+        nom: "Guiheneuc",
+        prenom: "Quentin",
+        mail: "guiheneuc.quentin@outlook.fr",
+        path_img: "/Dashbord/upload/DfkhrO1XUAEYkdw.jpg",
+        type: "admin",
+      },
+    ];
+    ```
+- POST
+
+  ```
+    /users
+    body
+    user = "mail"
+    passeword = "passeword"
+  ```
+
+  - return
+    ```js
+    [
+      {
+        id_user: 1,
+        nom: "Guiheneuc",
+        prenom: "Quentin",
+        mail: "guiheneuc.quentin@outlook.fr",
+        path_img: "/Dashbord/upload/DfkhrO1XUAEYkdw.jpg",
+        type: "admin",
+      },
+    ];
+    ```
+
+### notification
+
+- GET
+
+  ```
+  /notification
+  ```
+
+  - return
+    ```js
+        [
+          {
+              "id_notif": 45,
+              "text": "testtext",
+              "type": "typetext",
+              "icon": "/icon.png",
+              "date": "2022-03-11T20:48:38.000Z",
+              "color": "#51FF0D"
+          },
+          ...
+      ]
+    ```
+
+```
+  /notification/:id
+```
+
+- return
+  ```js
+  [
+    {
+      id_notif: 45,
+      text: "testtext",
+      type: "typetext",
+      icon: "/icon.png",
+      date: "2022-03-11T20:48:38.000Z",
+      color: "#51FF0D",
+    },
+  ];
+  ```
+- POST
+
+  ```
+  /notification
+  body
+  titre = testtext
+  text = testtext
+  type = typetext
+  icon = /icon.png
+  color = #51FF0D
+  ```
+
+  - return
+    ```js
+    {
+        "affectedRows": 1,
+        "insertId": 45,
+        "warningStatus": 0
+    }
+    ```
+
+- DELETE
+
+  ```
+  /notification/:id
+  ```
+
+  ```
+  /notification/all
+  ```
