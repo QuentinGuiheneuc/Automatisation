@@ -7,6 +7,7 @@ const routerobjet = require("./routers/objet.js");
 const routertopic = require("./routers/topic.js");
 const routercache = require("./routers/cache.js");
 const routerclient = require("./routers/client.js");
+const routernotification = require("./routers/notification.js");
 app.use(routerUser);
 app.use(routerAutom);
 app.use(routerparam);
@@ -15,6 +16,7 @@ app.use(routerexe);
 app.use(routertopic);
 app.use(routercache);
 app.use(routerclient);
+app.use(routernotification);
 
 app.use(function (req, res) {
   res.status(404);
