@@ -114,7 +114,7 @@ class mqttSocker {
       sock.on("data", (chunk) => {
         let value = this.ertement(chunk);
         if (value) {
-          resolve(value);
+          resolve(JSON.parse(value));
         } else {
           reject(this.err);
         }
@@ -136,7 +136,7 @@ class mqttSocker {
       sock.on("data", (chunk) => {
         let value = this.ertement(chunk);
         if (value) {
-          resolve(value);
+          resolve(JSON.parse(value));
         } else {
           reject(this.err);
         }
@@ -158,7 +158,7 @@ class mqttSocker {
       sock.on("data", (chunk) => {
         let value = this.ertement(chunk);
         if (value) {
-          resolve(value);
+          resolve(JSON.parse(value));
         } else {
           reject(so.err);
         }
@@ -180,7 +180,7 @@ class mqttSocker {
       sock.on("data", (chunk) => {
         let value = this.ertement(chunk);
         if (value) {
-          resolve(value);
+          resolve(JSON.parse(value));
         } else {
           reject(this.err);
         }
@@ -202,7 +202,7 @@ class mqttSocker {
       sock.on("data", (chunk) => {
         let value = this.ertement(chunk);
         if (value) {
-          resolve(value);
+          resolve(JSON.parse(value));
         } else {
           reject(this.err);
         }
@@ -226,7 +226,7 @@ class mqttSocker {
         console.log(chunk);
         let value = this.ertement(chunk);
         if (value) {
-          resolve(value);
+          resolve(JSON.parse(value));
         } else {
           reject(this.err);
         }
@@ -251,7 +251,7 @@ class mqttSocker {
         console.log(chunk);
         let value = this.ertement(chunk);
         if (value) {
-          resolve(value);
+          resolve(JSON.parse(value));
         } else {
           reject(this.err);
         }
@@ -275,7 +275,7 @@ class mqttSocker {
         console.log(chunk);
         let value = this.ertement(chunk);
         if (value) {
-          resolve(value);
+          resolve(JSON.parse(value));
         } else {
           reject(this.err);
         }
@@ -304,7 +304,7 @@ class mqttSocker {
         console.log(chunk);
         let value = this.ertement(chunk);
         if (value) {
-          resolve(value);
+          resolve(JSON.parse(value));
         } else {
           reject(this.err);
         }
@@ -329,7 +329,7 @@ class mqttSocker {
         console.log(chunk);
         let value = this.ertement(chunk);
         if (value) {
-          resolve(value);
+          resolve(JSON.parse(value));
         } else {
           reject(this.err);
         }
@@ -353,7 +353,7 @@ class mqttSocker {
         console.log(chunk);
         let value = this.ertement(chunk);
         if (value) {
-          resolve(value);
+          resolve(JSON.parse(value));
         } else {
           reject(this.err);
         }
@@ -402,7 +402,7 @@ class mqttSocker {
         console.log(chunk);
         let value = this.ertement(chunk);
         if (value) {
-          resolve(value);
+          resolve(valuJSON.parse(value));
         } else {
           reject(this.err);
         }
@@ -428,7 +428,7 @@ class mqttSocker {
         console.log(chunk);
         let value = this.ertement(chunk);
         if (value) {
-          resolve(value);
+          resolve(JSON.parse(value));
         } else {
           reject(this.err);
         }
@@ -454,7 +454,7 @@ class mqttSocker {
         console.log(chunk);
         let value = this.ertement(chunk);
         if (value) {
-          resolve(value);
+          resolve(JSON.parse(value));
         } else {
           reject(this.err);
         }
@@ -479,7 +479,7 @@ class mqttSocker {
         console.log(chunk);
         let value = this.ertement(chunk);
         if (value) {
-          resolve(value);
+          resolve(JSON.parse(value));
         } else {
           reject(this.err);
         }
@@ -509,7 +509,7 @@ class mqttSocker {
         console.log(chunk);
         let value = this.ertement(chunk);
         if (value) {
-          resolve(value);
+          resolve(JSON.parse(value));
         } else {
           reject(this.err);
         }
@@ -535,7 +535,7 @@ class mqttSocker {
         console.log(chunk);
         let value = this.ertement(chunk);
         if (value) {
-          resolve(value);
+          resolve(JSON.parse(value));
         } else {
           reject(this.err);
         }
@@ -560,7 +560,7 @@ class mqttSocker {
         console.log(chunk);
         let value = this.ertement(chunk);
         if (value) {
-          resolve(value);
+          resolve(JSON.parse(value));
         } else {
           reject(this.err);
         }
@@ -585,16 +585,17 @@ class mqttSocker {
         console.log(chunk);
         let value = this.ertement(chunk);
         if (value) {
-          resolve(value);
+          resolve(JSON.parse(value));
         } else {
-          reject(this.err);
+          reject(this.err.message);
         }
       });
       sock.on("error", function (err) {
-        reject(err);
+        reject(err.message);
       });
     });
   };
+  //test OK
   /**
    * @param id Int
    * @param objet
@@ -612,7 +613,7 @@ class mqttSocker {
         console.log(chunk);
         let value = this.ertement(chunk);
         if (value) {
-          resolve(value);
+          resolve(JSON.parse(value));
         } else {
           reject(this.err);
         }
