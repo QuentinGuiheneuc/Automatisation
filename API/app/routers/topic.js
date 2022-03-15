@@ -1,12 +1,6 @@
 const router = require("express").Router();
-const sock = require("../socket/sock.js");
-const config = require("../../config.js");
-const client = new sock();
-client.separation = config.socket.serverofpython.separation;
-client.connect(
-  config.socket.serverofpython.host,
-  config.socket.serverofpython.port
-);
+const client = require("../connexionSocket");
+
 router.get("/topic", (req, res, next) => {
   const results = Object.keys(req.query);
   if (results.find((element) => element == "cache")) {
@@ -16,7 +10,7 @@ router.get("/topic", (req, res, next) => {
         res.json(value);
       })
       .catch((err) => {
-        res.status(500);
+        res.status(500).json(err.message);
         res.end();
       });
   }
@@ -28,7 +22,7 @@ router.get("/topic", (req, res, next) => {
         res.json(value);
       })
       .catch((err) => {
-        res.status(500);
+        res.status(500).json(err.message);
         res.end();
       });
   }
