@@ -11,14 +11,23 @@ export default function Radiators() {
   
     if (newTemperature >= 15) {
       setTemperatureColor('hot');
-    }}
+    }
+  
+    if (newTemperature > 35) {
+      setTemperature(35)
+    }
+  }
 
   const decreaseTemperature = () => {
     const newTemperature = temperature - 1;
     setTemperature(newTemperature)
 
-    if (newTemperature <= 15) {
+    if (newTemperature < 15) {
       setTemperatureColor('cold')
+    }
+
+    if (newTemperature < -25) {
+      setTemperature(-25)
     }
   }
 
