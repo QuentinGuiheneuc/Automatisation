@@ -2,7 +2,6 @@ const express = require("express");
 const config = require("../config.js");
 const route = require("./router.js");
 const app = express();
-const sock = require("./socket/sock.js");
 const bodyParser = require("body-parser");
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -11,6 +10,7 @@ app.use(function (req, res, next) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   next();
 });
+
 app.use(route);
 // const client = new sock();
 // client.separation = config.socket.serverofpython.separation;
@@ -27,6 +27,19 @@ app.use(route);
 //     })
 //     .catch((err) => {
 //       res.status(err);
+//       res.end();
+//     });
+// });
+
+// app.post("/objetexe", (req, res, next) => {
+//   console.log(req.body.param);
+//   client
+//     .objetExe(req.body.id, req.body.param)
+//     .then((value) => {
+//       res.json(value);
+//     })
+//     .catch((err) => {
+//       res.status(500).json(err.message);
 //       res.end();
 //     });
 // });
