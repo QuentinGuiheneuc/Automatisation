@@ -16,6 +16,8 @@ import Layout from './components/Layout';
 import Home from './pages/Home';
 import Lights from './pages/Lights';
 import Light from './pages/Light';
+import Radiators from './pages/Radiators';
+import Radiator from './pages/Radiator';
 function App() {
   return (
     <div className="App h-full">
@@ -27,6 +29,8 @@ function App() {
               <Route index element={<Home />}/>
               <Route path='/lights' element={<Lights />}/>
               <Route path='/lights/:light' element={<Light />}/>
+              <Route path='/radiators' element={<Radiators />}/>
+              <Route path='/radiators/:radiator' element={<Radiator />}/>
             </Route>
           </Routes>
         </BrowserRouter>

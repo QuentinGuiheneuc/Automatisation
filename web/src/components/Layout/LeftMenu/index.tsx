@@ -5,6 +5,7 @@ import ProductButtonList from '../ProductButtonList';
 
 import home_icon from '../../../assets/icons/home_icon.png';
 import light_icon from '../../../assets/icons/light_icon.png';
+import temperature_icon from '../../../assets/icons/temperature_icon.png';
 
 import { Link } from 'react-router-dom';
 
@@ -21,6 +22,9 @@ export default function LeftMenu() {
           </li>
           <li>
             <ProductButtonList to="/lights" text="LIGHT" icon={light_icon}/>
+          </li>
+          <li className='pt-6'>
+            <MenuButton to="/radiators" text="RADIATOR" icon={temperature_icon}/>
           </li>
           
         </ul>

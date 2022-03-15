@@ -1,5 +1,3 @@
-import React from 'react';
-
 import light_icon from '../../../assets/icons/light_icon.png';
 import MenuButton from '../MenuButton';
 
