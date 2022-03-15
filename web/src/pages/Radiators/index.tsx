@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import './radiators.css'
+import './styles.css'
 
 export default function Radiators() {
   const [temperature, setTemperature] = useState(10);
