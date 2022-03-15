@@ -1,11 +1,26 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
+
+import { useNavigate } from 'react-router-dom';
+import { useAppSelector } from '../../store/store';
+
+import { userApi } from '../../data/userApi'
 
 import TopBar from './TopBar';
 import SubTopBar from './SubTopBar';
 import LeftMenu from './LeftMenu';
 
 export default function Layout() {
+  const navigate = useNavigate()
+  const { isLogged } = useAppSelector((store) => store.auth)
+  
+  useEffect(() => {
+    if(!isLogged){
+      navigate('/login')
+    }
+    console.log(userApi.test())
+  }, [isLogged, navigate])
+
   return (
     <div className="max-h-full h-full flex flex-row max-w-full">
       <LeftMenu/>
