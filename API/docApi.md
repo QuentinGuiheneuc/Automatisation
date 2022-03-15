@@ -465,3 +465,136 @@
   ```
   /notification/all
   ```
+
+### meteo
+
+- GET
+
+  ```js
+    /meteo
+  ```
+
+  - return
+
+    ```js
+      [
+        {
+            "id_insee": 1,
+            "nom": "L'Abergement-Clémenciat",
+            "codeDepartement": "01",
+            "codesPostaux": "01400",
+            "insee": "01001"
+        },
+        {
+            "id_insee": 2,
+            "nom": "L'Abergement-de-Varey",
+            "codeDepartement": "01",
+            "codesPostaux": "01640",
+            "insee": "01002"
+        },
+        ...
+      ]
+
+    ```
+
+  ```js
+    /meteo/search?search=Bordea
+  ```
+
+  - return
+
+    ```js
+      [
+        {
+            "id_insee": 12325,
+            "nom": "Artigues-près-Bordeaux",
+            "codeDepartement": "33",
+            "codesPostaux": "33370",
+            "insee": "33013"
+        },
+        {
+            "id_insee": 12374,
+            "nom": "Bordeaux",
+            "codeDepartement": "33",
+            "codesPostaux": "33000",
+            "insee": "33063"
+        },
+        ...
+      ]
+    ```
+
+  ```js
+    /meteo/donner
+  ```
+
+  - return
+
+    ```js
+      {
+    "city": {
+        "insee": "33063",
+        "cp": 33000,
+        "name": "Bordeaux",
+        "latitude": 44.8572,
+        "longitude": -0.5737,
+        "altitude": 9
+    },
+    "ephemeride": {
+        "latitude": 44.8572,
+        "longitude": -0.5737,
+        "insee": "33063",
+        "day": 0,
+        "datetime": "2022-03-14T00:00:00+0100",
+        "sunrise": "07:14",
+        "sunset": "19:08",
+        "duration_day": "11:54",
+        "diff_duration_day": 4,
+        "moon_age": 10.5,
+        "moon_phase": "Lune gibbeuse croissante"
+    },
+    "forecast": [
+        {
+          "insee": "33063",
+          "cp": 33000,
+          "latitude": 44.8572,
+          "longitude": -0.5737,
+          "day": 0,
+          "datetime": "2022-03-14T01:00:00+0100",
+          "wind10m": 20,
+          "gust10m": 57,
+          "dirwind10m": 108,
+          "rr10": 1.5,
+          "rr1": 3.1,
+          "probarain": 80,
+          "weather": 4,
+          "tmin": 5,
+          "tmax": 16,
+          "sun_hours": 1,
+          "etp": 1,
+          "probafrost": 10,
+          "probafog": 0,
+          "probawind70": 0,
+          "probawind100": 0,
+          "gustx": 59
+        },
+        ...
+        ]
+      }
+    ```
+
+  ```js
+    /meteo/param
+  ```
+
+  - return
+
+    ```js
+    [
+      {
+        nom: "Bordeaux",
+        codeDepartement: "33",
+        codesPostaux: "33000",
+        insee: "33063",
+      },
+    ];
+    ```
