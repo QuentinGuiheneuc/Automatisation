@@ -10,8 +10,9 @@ app.use(function (req, res, next) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   next();
 });
-
+app.use(express.static(__dirname + "/public"));
 app.use(route);
+
 // const client = new sock();
 // client.separation = config.socket.serverofpython.separation;
 // client.connect(
