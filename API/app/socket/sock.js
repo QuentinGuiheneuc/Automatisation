@@ -29,6 +29,7 @@ class sok {
       },
       () => {
         isco = true;
+        console.log(isco, this.host, this.port);
       }
     );
     this.socke.on("end", function () {
