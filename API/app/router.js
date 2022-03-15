@@ -8,6 +8,7 @@ const routertopic = require("./routers/topic.js");
 const routercache = require("./routers/cache.js");
 const routerclient = require("./routers/client.js");
 const routernotification = require("./routers/notification.js");
+const routermeteo = require("./routers/meteo.js");
 app.use(routerUser);
 app.use(routerAutom);
 app.use(routerparam);
@@ -17,9 +18,10 @@ app.use(routertopic);
 app.use(routercache);
 app.use(routerclient);
 app.use(routernotification);
+app.use(routermeteo);
 
 app.use(function (req, res) {
   res.status(404);
-  res.end("Not Found");
+  res.end("Not Found 1");
 });
 module.exports = app;
