@@ -105,14 +105,14 @@ class myorm {
       var i = 0;
       var setString = "";
       for (const [key, value] of Object.entries(this.objet)) {
-        var lth = this.conte() - 1;
+        var lth = this.conte();
         if (key == this.table_.id) {
           continue;
         }
         if (lth != i + 1) {
-          setString = setString + `'${key}' = '${value}', `;
+          setString = setString.concat("`", key, "` = '", value, "',");
         } else if (lth == i + 1) {
-          setString = setString + `'${key}' = '${value}'`;
+          setString = setString.concat("`", key, "` = '", value, "'");
         }
         i = i + 1;
       }
