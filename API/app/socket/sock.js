@@ -20,11 +20,11 @@ class sok {
         port: this.port,
         onread: {
           // Reuses a 4KiB Buffer for every read from the socket.
-          buffer: Buffer.alloc(4 * 1024),
-          callback: function (nread, buf) {
-            // Received data is available in `buf` from 0 to `nread`.
-            console.log(buf.toString("utf8", 0, nread));
-          },
+          buffer: Buffer.alloc(5 * 1024 * 1024),
+          // callback: function (nread, buf) {
+          //   // Received data is available in `buf` from 0 to `nread`.
+          //   console.log(buf.toString("utf8", 0, nread));
+          // },
         },
       },
       () => {
@@ -32,10 +32,6 @@ class sok {
         console.log(isco, this.host, this.port);
       }
     );
-    this.socke.on("end", function () {
-      console.log("Requested an end to the TCP connection");
-    });
-
     return this.socke;
   };
 }
@@ -49,57 +45,57 @@ class mqttSocker {
     this.host = host;
     this.port = port;
   };
-  ertement = (chunk) => {
-    const data = chunk.toString();
-    console.log(data);
-    const datasqlit = data.split(this.separation);
-    const action1 = datasqlit[0];
-    const action2 = datasqlit[1];
-    const value = datasqlit[2];
-    switch (action1) {
-      case "server":
-        switch (action2) {
-          case "status":
-            return value;
-            break;
-          case "start":
-            return value;
-            break;
-          case "stop":
-            return value;
-            break;
-          default:
-            return null;
-        }
-      case "objet":
-        switch (action2) {
-          case "exe":
-            return value;
-            break;
-          case "start":
-            return value;
-            break;
-          case "stop":
-            return value;
-            break;
-          default:
-            return null;
-        }
-      case "list":
-        return action2;
-      case "topic":
-        return action2;
-      case "is_co_res":
-        return action2;
-      case "added":
-        return action2;
-      case "updated":
-        return action2;
-      case "delete":
-        return action2;
-      default:
-        return null;
-    }
+  ertement = (data) => {
+    return new Promise((resolve, reject) => {
+      const datasqlit = data.split(this.separation);
+      const action1 = datasqlit[0];
+      const action2 = datasqlit[1];
+      const value = datasqlit[2];
+      switch (action1) {
+        case "server":
+          switch (action2) {
+            case "status":
+              resolve(value);
+              break;
+            case "start":
+              resolve(value);
+              break;
+            case "stop":
+              resolve(value);
+              break;
+            default:
+              return null;
+          }
+        case "objet":
+          switch (action2) {
+            case "exe":
+              resolve(value);
+              break;
+            case "start":
+              resolve(value);
+              break;
+            case "stop":
+              resolve(value);
+              break;
+            default:
+              return null;
+          }
+        case "list":
+          resolve(action2);
+        case "topic":
+          resolve(action2);
+        case "is_co_res":
+          resolve(action2);
+        case "added":
+          resolve(action2);
+        case "updated":
+          resolve(action2);
+        case "delete":
+          resolve(action2);
+        default:
+          return null;
+      }
+    });
   };
 
   /**
@@ -108,20 +104,32 @@ class mqttSocker {
    */
   status = () => {
     return new Promise((resolve, reject) => {
-      const s = new sok(this.host, this.port);
-      const sock = s.sok();
-      //console.log(this.socke, "conn", this.host, this.port);
-      sock.write(`server${this.separation}status`);
-      sock.on("data", (chunk) => {
-        let value = this.ertement(chunk);
-        if (value) {
-          resolve(JSON.parse(value));
-        } else {
-          reject(this.err);
-        }
-      });
-      sock.on("error", function (err) {
-        reject(err);
+      const fon = () => {
+        return new Promise((resolve, reject) => {
+          const s = new sok(this.host, this.port);
+          const sock = s.sok();
+          sock.write(`server${this.separation}status`);
+          let donner = "";
+          sock.on("data", (chunk) => {
+            console.log(chunk);
+            donner = donner.concat(chunk.toString());
+            sock.serverString = donner;
+          });
+          sock.on("end", () => {
+            sock.serverString = donner;
+            resolve(donner);
+          });
+          sock.on("error", function (err) {
+            reject(err);
+          });
+        });
+      };
+      fon().then((value) => {
+        this.ertement(value)
+          .then((ertValue) => {
+            resolve(JSON.parse(ertValue));
+          })
+          .catch((err) => reject(err));
       });
     });
   };
@@ -131,19 +139,32 @@ class mqttSocker {
    */
   start = () => {
     return new Promise((resolve, reject) => {
-      const s = new sok(this.host, this.port);
-      const sock = s.sok();
-      sock.write(`server${this.separation}start`);
-      sock.on("data", (chunk) => {
-        let value = this.ertement(chunk);
-        if (value) {
-          resolve(JSON.parse(value));
-        } else {
-          reject(this.err);
-        }
-      });
-      sock.on("error", function (err) {
-        reject(err);
+      const fon = () => {
+        return new Promise((resolve, reject) => {
+          const s = new sok(this.host, this.port);
+          const sock = s.sok();
+          sock.write(`server${this.separation}start`);
+          let donner = "";
+          sock.on("data", (chunk) => {
+            console.log(chunk);
+            donner = donner.concat(chunk.toString());
+            sock.serverString = donner;
+          });
+          sock.on("end", () => {
+            sock.serverString = donner;
+            resolve(donner);
+          });
+          sock.on("error", function (err) {
+            reject(err);
+          });
+        });
+      };
+      fon().then((value) => {
+        this.ertement(value)
+          .then((ertValue) => {
+            resolve(JSON.parse(ertValue));
+          })
+          .catch((err) => reject(err));
       });
     });
   };
@@ -153,19 +174,33 @@ class mqttSocker {
    */
   stop = () => {
     return new Promise((resolve, reject) => {
-      const s = new sok(this.host, this.port);
-      const sock = s.sok();
-      sock.write(`server${this.separation}stop`);
-      sock.on("data", (chunk) => {
-        let value = this.ertement(chunk);
-        if (value) {
-          resolve(JSON.parse(value));
-        } else {
-          reject(so.err);
-        }
-      });
-      sock.on("error", function (err) {
-        reject(this.err);
+      const fon = () => {
+        return new Promise((resolve, reject) => {
+          const s = new sok(this.host, this.port);
+          const sock = s.sok();
+          sock.write(`server${this.separation}stop`);
+
+          let donner = "";
+          sock.on("data", (chunk) => {
+            console.log(chunk);
+            donner = donner.concat(chunk.toString());
+            sock.serverString = donner;
+          });
+          sock.on("end", () => {
+            sock.serverString = donner;
+            resolve(donner);
+          });
+          sock.on("error", function (err) {
+            reject(err);
+          });
+        });
+      };
+      fon().then((value) => {
+        this.ertement(value)
+          .then((ertValue) => {
+            resolve(JSON.parse(ertValue));
+          })
+          .catch((err) => reject(err));
       });
     });
   };
@@ -175,19 +210,32 @@ class mqttSocker {
    */
   listsTopic = () => {
     return new Promise((resolve, reject) => {
-      const s = new sok(this.host, this.port);
-      const sock = s.sok();
-      sock.write(`list${this.separation}topic`);
-      sock.on("data", (chunk) => {
-        let value = this.ertement(chunk);
-        if (value) {
-          resolve(JSON.parse(value));
-        } else {
-          reject(this.err);
-        }
-      });
-      sock.on("error", function (err) {
-        reject(err);
+      const fon = () => {
+        return new Promise((resolve, reject) => {
+          const s = new sok(this.host, this.port);
+          const sock = s.sok();
+          sock.write(`list${this.separation}topic`);
+          let donner = "";
+          sock.on("data", (chunk) => {
+            console.log(chunk);
+            donner = donner.concat(chunk.toString());
+            sock.serverString = donner;
+          });
+          sock.on("end", () => {
+            sock.serverString = donner;
+            resolve(donner);
+          });
+          sock.on("error", function (err) {
+            reject(err);
+          });
+        });
+      };
+      fon().then((value) => {
+        this.ertement(value)
+          .then((ertValue) => {
+            resolve(JSON.parse(ertValue));
+          })
+          .catch((err) => reject(err));
       });
     });
   };
@@ -197,19 +245,32 @@ class mqttSocker {
    */
   listsClient = () => {
     return new Promise((resolve, reject) => {
-      const s = new sok(this.host, this.port);
-      const sock = s.sok();
-      sock.write(`list${this.separation}client`);
-      sock.on("data", (chunk) => {
-        let value = this.ertement(chunk);
-        if (value) {
-          resolve(JSON.parse(value));
-        } else {
-          reject(this.err);
-        }
-      });
-      sock.on("error", function (err) {
-        reject(err);
+      const fon = () => {
+        return new Promise((resolve, reject) => {
+          const s = new sok(this.host, this.port);
+          const sock = s.sok();
+          sock.write(`list${this.separation}client`);
+          let donner = "";
+          sock.on("data", (chunk) => {
+            console.log(chunk);
+            donner = donner.concat(chunk.toString());
+            sock.serverString = donner;
+          });
+          sock.on("end", () => {
+            sock.serverString = donner;
+            resolve(donner);
+          });
+          sock.on("error", function (err) {
+            reject(err);
+          });
+        });
+      };
+      fon().then((value) => {
+        this.ertement(value)
+          .then((ertValue) => {
+            resolve(JSON.parse(ertValue));
+          })
+          .catch((err) => reject(err));
       });
     });
   };
@@ -219,22 +280,35 @@ class mqttSocker {
    */
   listsCache = () => {
     return new Promise((resolve, reject) => {
-      const s = new sok(this.host, this.port);
-      const sock = s.sok();
-      sock.write(`list${this.separation}cache`);
-      //console.log(sock);
-      sock.on("data", (chunk) => {
-        console.log(chunk);
-        let value = this.ertement(chunk);
-        if (value) {
-          resolve(JSON.parse(value));
-        } else {
-          reject(this.err);
-        }
+      const fon = () => {
+        return new Promise((resolve, reject) => {
+          const s = new sok(this.host, this.port);
+          const sock = s.sok();
+          sock.write(`list${this.separation}cache`);
+          let donner = "";
+          sock.on("data", (chunk) => {
+            console.log(chunk);
+            donner = donner.concat(chunk.toString());
+            sock.serverString = donner;
+          });
+          sock.on("end", () => {
+            sock.serverString = donner;
+            resolve(donner);
+          });
+          sock.on("error", function (err) {
+            reject(err);
+          });
+        });
+      };
+      fon().then((value) => {
+        this.ertement(value)
+          .then((ertValue) => {
+            resolve(JSON.parse(ertValue));
+          })
+          .catch((err) => reject(err));
       });
-      sock.on("error", function (err) {
-        reject(err);
-      });
+      // if (sock.endEmitted)
+      //
     });
   };
   /**
@@ -244,21 +318,32 @@ class mqttSocker {
    */
   listsAutom = (id = "") => {
     return new Promise((resolve, reject) => {
-      const s = new sok(this.host, this.port);
-      const sock = s.sok();
-      sock.write(`list${this.separation}autom${this.separation}${id}`);
-      //console.log(sock);
-      sock.on("data", (chunk) => {
-        console.log(chunk);
-        let value = this.ertement(chunk);
-        if (value) {
-          resolve(JSON.parse(value));
-        } else {
-          reject(this.err);
-        }
-      });
-      sock.on("error", function (err) {
-        reject(err);
+      const fon = () => {
+        return new Promise((resolve, reject) => {
+          const s = new sok(this.host, this.port);
+          const sock = s.sok();
+          sock.write(`list${this.separation}autom${this.separation}${id}`);
+          let donner = "";
+          sock.on("data", (chunk) => {
+            console.log(chunk);
+            donner = donner.concat(chunk.toString());
+            sock.serverString = donner;
+          });
+          sock.on("end", () => {
+            sock.serverString = donner;
+            resolve(donner);
+          });
+          sock.on("error", function (err) {
+            reject(err);
+          });
+        });
+      };
+      fon().then((value) => {
+        this.ertement(value)
+          .then((ertValue) => {
+            resolve(JSON.parse(ertValue));
+          })
+          .catch((err) => reject(err));
       });
     });
   };
@@ -268,21 +353,35 @@ class mqttSocker {
    */
   addAutom = (bodyParam) => {
     return new Promise((resolve, reject) => {
-      const s = new sok(this.host, this.port);
-      const sock = s.sok();
-      sock.write(`add${this.separation}autom${this.separation}${bodyParam}`);
-      //console.log(sock);
-      sock.on("data", (chunk) => {
-        console.log(chunk);
-        let value = this.ertement(chunk);
-        if (value) {
-          resolve(JSON.parse(value));
-        } else {
-          reject(this.err);
-        }
-      });
-      sock.on("error", function (err) {
-        reject(err);
+      const fon = () => {
+        return new Promise((resolve, reject) => {
+          const s = new sok(this.host, this.port);
+          const sock = s.sok();
+          sock.write(
+            `add${this.separation}autom${this.separation}${bodyParam}`
+          );
+
+          let donner = "";
+          sock.on("data", (chunk) => {
+            console.log(chunk);
+            donner = donner.concat(chunk.toString());
+            sock.serverString = donner;
+          });
+          sock.on("end", () => {
+            sock.serverString = donner;
+            resolve(donner);
+          });
+          sock.on("error", function (err) {
+            reject(err);
+          });
+        });
+      };
+      fon().then((value) => {
+        this.ertement(value)
+          .then((ertValue) => {
+            resolve(JSON.parse(ertValue));
+          })
+          .catch((err) => reject(err));
       });
     });
   };
@@ -292,26 +391,36 @@ class mqttSocker {
    */
   updeteAutom = (params) => {
     return new Promise((resolve, reject) => {
-      const s = new sok(this.host, this.port);
-      const sock = s.sok();
-
-      sock.write(
-        `update${this.separation}autom${this.separation}${JSON.stringify(
-          params
-        )}`
-      );
-      //console.log(sock);
-      sock.on("data", (chunk) => {
-        console.log(chunk);
-        let value = this.ertement(chunk);
-        if (value) {
-          resolve(JSON.parse(value));
-        } else {
-          reject(this.err);
-        }
-      });
-      sock.on("error", function (err) {
-        reject(err);
+      const fon = () => {
+        return new Promise((resolve, reject) => {
+          const s = new sok(this.host, this.port);
+          const sock = s.sok();
+          sock.write(
+            `update${this.separation}autom${this.separation}${JSON.stringify(
+              params
+            )}`
+          );
+          let donner = "";
+          sock.on("data", (chunk) => {
+            console.log(chunk);
+            donner = donner.concat(chunk.toString());
+            sock.serverString = donner;
+          });
+          sock.on("end", () => {
+            sock.serverString = donner;
+            resolve(donner);
+          });
+          sock.on("error", function (err) {
+            reject(err);
+          });
+        });
+      };
+      fon().then((value) => {
+        this.ertement(value)
+          .then((ertValue) => {
+            resolve(JSON.parse(ertValue));
+          })
+          .catch((err) => reject(err));
       });
     });
   };
@@ -321,22 +430,32 @@ class mqttSocker {
    */
   delAutom = (id) => {
     return new Promise((resolve, reject) => {
-      const s = new sok(this.host, this.port);
-      const sock = s.sok();
-
-      sock.write(`del${this.separation}autom${this.separation}${id}`);
-      //console.log(sock);
-      sock.on("data", (chunk) => {
-        console.log(chunk);
-        let value = this.ertement(chunk);
-        if (value) {
-          resolve(JSON.parse(value));
-        } else {
-          reject(this.err);
-        }
-      });
-      sock.on("error", function (err) {
-        reject(err);
+      const fon = () => {
+        return new Promise((resolve, reject) => {
+          const s = new sok(this.host, this.port);
+          const sock = s.sok();
+          sock.write(`del${this.separation}autom${this.separation}${id}`);
+          let donner = "";
+          sock.on("data", (chunk) => {
+            console.log(chunk);
+            donner = donner.concat(chunk.toString());
+            sock.serverString = donner;
+          });
+          sock.on("end", () => {
+            sock.serverString = donner;
+            resolve(donner);
+          });
+          sock.on("error", function (err) {
+            reject(err);
+          });
+        });
+      };
+      fon().then((value) => {
+        this.ertement(value)
+          .then((ertValue) => {
+            resolve(JSON.parse(ertValue));
+          })
+          .catch((err) => reject(err));
       });
     });
   };
@@ -346,21 +465,32 @@ class mqttSocker {
    */
   objetTopic = (topic) => {
     return new Promise((resolve, reject) => {
-      const s = new sok(this.host, this.port);
-      const sock = s.sok();
-      sock.write(`objet${this.separation}topic${this.separation}${topic}`);
-      //console.log(sock);
-      sock.on("data", (chunk) => {
-        console.log(chunk);
-        let value = this.ertement(chunk);
-        if (value) {
-          resolve(JSON.parse(value));
-        } else {
-          reject(this.err);
-        }
-      });
-      sock.on("error", function (err) {
-        reject(err);
+      const fon = () => {
+        return new Promise((resolve, reject) => {
+          const s = new sok(this.host, this.port);
+          const sock = s.sok();
+          sock.write(`objet${this.separation}topic${this.separation}${topic}`);
+          let donner = "";
+          sock.on("data", (chunk) => {
+            console.log(chunk);
+            donner = donner.concat(chunk.toString());
+            sock.serverString = donner;
+          });
+          sock.on("end", () => {
+            sock.serverString = donner;
+            resolve(donner);
+          });
+          sock.on("error", function (err) {
+            reject(err);
+          });
+        });
+      };
+      fon().then((value) => {
+        this.ertement(value)
+          .then((ertValue) => {
+            resolve(JSON.parse(ertValue));
+          })
+          .catch((err) => reject(err));
       });
     });
   };
@@ -370,16 +500,32 @@ class mqttSocker {
    */
   objetIsCo = () => {
     return new Promise((resolve, reject) => {
-      const s = new sok(this.host, this.port);
-      const sock = s.sok();
-      sock.write(`objet${this.separation}is_co`);
-      // console.log(sock);
-      sock.on("data", (chunk) => {
-        console.log(chunk.toString());
-        resolve(true);
-      });
-      sock.on("error", function (err) {
-        reject(err);
+      const fon = () => {
+        return new Promise((resolve, reject) => {
+          const s = new sok(this.host, this.port);
+          const sock = s.sok();
+          sock.write(`objet${this.separation}is_co`);
+          let donner = "";
+          sock.on("data", (chunk) => {
+            console.log(chunk);
+            donner = donner.concat(chunk.toString());
+            sock.serverString = donner;
+          });
+          sock.on("end", () => {
+            sock.serverString = donner;
+            resolve(donner);
+          });
+          sock.on("error", function (err) {
+            reject(err);
+          });
+        });
+      };
+      fon().then((value) => {
+        this.ertement(value)
+          .then((ertValue) => {
+            resolve(JSON.parse(ertValue));
+          })
+          .catch((err) => reject(err));
       });
     });
   };
@@ -390,26 +536,38 @@ class mqttSocker {
    */
   addParam = (bodyParam) => {
     return new Promise((resolve, reject) => {
-      const s = new sok(this.host, this.port);
-      const sock = s.sok();
-      const params = JSON.parse(bodyParam);
-      const stringEvoie = `add${this.separation}param${this.separation}${
-        params.name_param
-      }${this.separation}${JSON.stringify(params.param)}`;
-      console.log(stringEvoie);
-      sock.write(stringEvoie);
-      //console.log(sock);
-      sock.on("data", (chunk) => {
-        console.log(chunk);
-        let value = this.ertement(chunk);
-        if (value) {
-          resolve(valuJSON.parse(value));
-        } else {
-          reject(this.err);
-        }
-      });
-      sock.on("error", function (err) {
-        reject(err);
+      const fon = () => {
+        return new Promise((resolve, reject) => {
+          const s = new sok(this.host, this.port);
+          const sock = s.sok();
+          const params = JSON.parse(bodyParam);
+          const stringEvoie = `add${this.separation}param${this.separation}${
+            params.name_param
+          }${this.separation}${JSON.stringify(params.param)}`;
+          console.log(stringEvoie);
+          sock.write(stringEvoie);
+
+          let donner = "";
+          sock.on("data", (chunk) => {
+            console.log(chunk);
+            donner = donner.concat(chunk.toString());
+            sock.serverString = donner;
+          });
+          sock.on("end", () => {
+            sock.serverString = donner;
+            resolve(donner);
+          });
+          sock.on("error", function (err) {
+            reject(err);
+          });
+        });
+      };
+      fon().then((value) => {
+        this.ertement(value)
+          .then((ertValue) => {
+            resolve(JSON.parse(ertValue));
+          })
+          .catch((err) => reject(err));
       });
     });
   };
@@ -420,22 +578,32 @@ class mqttSocker {
    */
   listeParam = (id = "") => {
     return new Promise((resolve, reject) => {
-      const s = new sok(this.host, this.port);
-      const sock = s.sok();
-
-      sock.write(`list${this.separation}param${this.separation}${id}`);
-      //console.log(sock);
-      sock.on("data", (chunk) => {
-        console.log(chunk);
-        let value = this.ertement(chunk);
-        if (value) {
-          resolve(JSON.parse(value));
-        } else {
-          reject(this.err);
-        }
-      });
-      sock.on("error", function (err) {
-        reject(err);
+      const fon = () => {
+        return new Promise((resolve, reject) => {
+          const s = new sok(this.host, this.port);
+          const sock = s.sok();
+          sock.write(`list${this.separation}param${this.separation}${id}`);
+          let donner = "";
+          sock.on("data", (chunk) => {
+            console.log(chunk);
+            donner = donner.concat(chunk.toString());
+            sock.serverString = donner;
+          });
+          sock.on("end", () => {
+            sock.serverString = donner;
+            resolve(donner);
+          });
+          sock.on("error", function (err) {
+            reject(err);
+          });
+        });
+      };
+      fon().then((value) => {
+        this.ertement(value)
+          .then((ertValue) => {
+            resolve(JSON.parse(ertValue));
+          })
+          .catch((err) => reject(err));
       });
     });
   };
@@ -446,22 +614,34 @@ class mqttSocker {
    */
   updeteParam = (params) => {
     return new Promise((resolve, reject) => {
-      const s = new sok(this.host, this.port);
-      const sock = s.sok();
-
-      sock.write(`update${this.separation}param${this.separation}${params}`);
-      //console.log(sock);
-      sock.on("data", (chunk) => {
-        console.log(chunk);
-        let value = this.ertement(chunk);
-        if (value) {
-          resolve(JSON.parse(value));
-        } else {
-          reject(this.err);
-        }
-      });
-      sock.on("error", function (err) {
-        reject(err);
+      const fon = () => {
+        return new Promise((resolve, reject) => {
+          const s = new sok(this.host, this.port);
+          const sock = s.sok();
+          sock.write(
+            `update${this.separation}param${this.separation}${params}`
+          );
+          let donner = "";
+          sock.on("data", (chunk) => {
+            console.log(chunk);
+            donner = donner.concat(chunk.toString());
+            sock.serverString = donner;
+          });
+          sock.on("end", () => {
+            sock.serverString = donner;
+            resolve(donner);
+          });
+          sock.on("error", function (err) {
+            reject(err);
+          });
+        });
+      };
+      fon().then((value) => {
+        this.ertement(value)
+          .then((ertValue) => {
+            resolve(JSON.parse(ertValue));
+          })
+          .catch((err) => reject(err));
       });
     });
   };
@@ -471,22 +651,32 @@ class mqttSocker {
    */
   delParam = (id) => {
     return new Promise((resolve, reject) => {
-      const s = new sok(this.host, this.port);
-      const sock = s.sok();
-
-      sock.write(`del${this.separation}param${this.separation}${id}`);
-      //console.log(sock);
-      sock.on("data", (chunk) => {
-        console.log(chunk);
-        let value = this.ertement(chunk);
-        if (value) {
-          resolve(JSON.parse(value));
-        } else {
-          reject(this.err);
-        }
-      });
-      sock.on("error", function (err) {
-        reject(err);
+      const fon = () => {
+        return new Promise((resolve, reject) => {
+          const s = new sok(this.host, this.port);
+          const sock = s.sok();
+          sock.write(`del${this.separation}param${this.separation}${id}`);
+          let donner = "";
+          sock.on("data", (chunk) => {
+            console.log(chunk);
+            donner = donner.concat(chunk.toString());
+            sock.serverString = donner;
+          });
+          sock.on("end", () => {
+            sock.serverString = donner;
+            resolve(donner);
+          });
+          sock.on("error", function (err) {
+            reject(err);
+          });
+        });
+      };
+      fon().then((value) => {
+        this.ertement(value)
+          .then((ertValue) => {
+            resolve(JSON.parse(ertValue));
+          })
+          .catch((err) => reject(err));
       });
     });
   };
@@ -497,26 +687,37 @@ class mqttSocker {
    */
   addExe = (bodyParam) => {
     return new Promise((resolve, reject) => {
-      const s = new sok(this.host, this.port);
-      const sock = s.sok();
-      const params = JSON.parse(bodyParam);
-      const stringEvoie = `add${this.separation}exe${
-        this.separation
-      }${JSON.stringify(params)}`;
-      console.log(stringEvoie);
-      sock.write(stringEvoie);
-      //console.log(sock);
-      sock.on("data", (chunk) => {
-        console.log(chunk);
-        let value = this.ertement(chunk);
-        if (value) {
-          resolve(JSON.parse(value));
-        } else {
-          reject(this.err);
-        }
-      });
-      sock.on("error", function (err) {
-        reject(err);
+      const fon = () => {
+        return new Promise((resolve, reject) => {
+          const s = new sok(this.host, this.port);
+          const sock = s.sok();
+          const params = JSON.parse(bodyParam);
+          const stringEvoie = `add${this.separation}exe${
+            this.separation
+          }${JSON.stringify(params)}`;
+          console.log(stringEvoie);
+          sock.write(stringEvoie);
+          let donner = "";
+          sock.on("data", (chunk) => {
+            console.log(chunk);
+            donner = donner.concat(chunk.toString());
+            sock.serverString = donner;
+          });
+          sock.on("end", () => {
+            sock.serverString = donner;
+            resolve(donner);
+          });
+          sock.on("error", function (err) {
+            reject(err);
+          });
+        });
+      };
+      fon().then((value) => {
+        this.ertement(value)
+          .then((ertValue) => {
+            resolve(JSON.parse(ertValue));
+          })
+          .catch((err) => reject(err));
       });
     });
   };
@@ -527,22 +728,33 @@ class mqttSocker {
    */
   listeExe = (id = "") => {
     return new Promise((resolve, reject) => {
-      const s = new sok(this.host, this.port);
-      const sock = s.sok();
+      const fon = () => {
+        return new Promise((resolve, reject) => {
+          const s = new sok(this.host, this.port);
+          const sock = s.sok();
+          sock.write(`list${this.separation}exe${this.separation}${id}`);
 
-      sock.write(`list${this.separation}exe${this.separation}${id}`);
-      //console.log(sock);
-      sock.on("data", (chunk) => {
-        console.log(chunk);
-        let value = this.ertement(chunk);
-        if (value) {
-          resolve(JSON.parse(value));
-        } else {
-          reject(this.err);
-        }
-      });
-      sock.on("error", function (err) {
-        reject(err);
+          let donner = "";
+          sock.on("data", (chunk) => {
+            console.log(chunk);
+            donner = donner.concat(chunk.toString());
+            sock.serverString = donner;
+          });
+          sock.on("end", () => {
+            sock.serverString = donner;
+            resolve(donner);
+          });
+          sock.on("error", function (err) {
+            reject(err);
+          });
+        });
+      };
+      fon().then((value) => {
+        this.ertement(value)
+          .then((ertValue) => {
+            resolve(JSON.parse(ertValue));
+          })
+          .catch((err) => reject(err));
       });
     });
   };
@@ -553,21 +765,32 @@ class mqttSocker {
    */
   updeteExe = (params) => {
     return new Promise((resolve, reject) => {
-      const s = new sok(this.host, this.port);
-      const sock = s.sok();
-      sock.write(`update${this.separation}exe${this.separation}${params}`);
-      //console.log(sock);
-      sock.on("data", (chunk) => {
-        console.log(chunk);
-        let value = this.ertement(chunk);
-        if (value) {
-          resolve(JSON.parse(value));
-        } else {
-          reject(this.err);
-        }
-      });
-      sock.on("error", function (err) {
-        reject(err);
+      const fon = () => {
+        return new Promise((resolve, reject) => {
+          const s = new sok(this.host, this.port);
+          const sock = s.sok();
+          sock.write(`update${this.separation}exe${this.separation}${params}`);
+          let donner = "";
+          sock.on("data", (chunk) => {
+            console.log(chunk);
+            donner = donner.concat(chunk.toString());
+            sock.serverString = donner;
+          });
+          sock.on("end", () => {
+            sock.serverString = donner;
+            resolve(donner);
+          });
+          sock.on("error", function (err) {
+            reject(err);
+          });
+        });
+      };
+      fon().then((value) => {
+        this.ertement(value)
+          .then((ertValue) => {
+            resolve(JSON.parse(ertValue));
+          })
+          .catch((err) => reject(err));
       });
     });
   };
@@ -577,22 +800,32 @@ class mqttSocker {
    */
   delExe = (id) => {
     return new Promise((resolve, reject) => {
-      const s = new sok(this.host, this.port);
-      const sock = s.sok();
-
-      sock.write(`del${this.separation}exe${this.separation}${id}`);
-      //console.log(sock);
-      sock.on("data", (chunk) => {
-        console.log(chunk);
-        let value = this.ertement(chunk);
-        if (value) {
-          resolve(JSON.parse(value));
-        } else {
-          reject(this.err.message);
-        }
-      });
-      sock.on("error", function (err) {
-        reject(err.message);
+      const fon = () => {
+        return new Promise((resolve, reject) => {
+          const s = new sok(this.host, this.port);
+          const sock = s.sok();
+          sock.write(`del${this.separation}exe${this.separation}${id}`);
+          let donner = "";
+          sock.on("data", (chunk) => {
+            console.log(chunk);
+            donner = donner.concat(chunk.toString());
+            sock.serverString = donner;
+          });
+          sock.on("end", () => {
+            sock.serverString = donner;
+            resolve(donner);
+          });
+          sock.on("error", function (err) {
+            reject(err);
+          });
+        });
+      };
+      fon().then((value) => {
+        this.ertement(value)
+          .then((ertValue) => {
+            resolve(JSON.parse(ertValue));
+          })
+          .catch((err) => reject(err));
       });
     });
   };
@@ -604,23 +837,34 @@ class mqttSocker {
    */
   objetExe = (id, _json) => {
     return new Promise((resolve, reject) => {
-      const s = new sok(this.host, this.port);
-      const sock = s.sok();
-      sock.write(
-        `objet${this.separation}exe${this.separation}${id}${this.separation}${_json}`
-      );
-      //console.log(sock);
-      sock.on("data", (chunk) => {
-        console.log(chunk);
-        let value = this.ertement(chunk);
-        if (value) {
-          resolve(JSON.parse(value));
-        } else {
-          reject(this.err);
-        }
-      });
-      sock.on("error", function (err) {
-        reject(err);
+      const fon = () => {
+        return new Promise((resolve, reject) => {
+          const s = new sok(this.host, this.port);
+          const sock = s.sok();
+          sock.write(
+            `objet${this.separation}exe${this.separation}${id}${this.separation}${_json}`
+          );
+          let donner = "";
+          sock.on("data", (chunk) => {
+            console.log(chunk);
+            donner = donner.concat(chunk.toString());
+            sock.serverString = donner;
+          });
+          sock.on("end", () => {
+            sock.serverString = donner;
+            resolve(donner);
+          });
+          sock.on("error", function (err) {
+            reject(err);
+          });
+        });
+      };
+      fon().then((value) => {
+        this.ertement(value)
+          .then((ertValue) => {
+            resolve(JSON.parse(ertValue));
+          })
+          .catch((err) => reject(err));
       });
     });
   };
