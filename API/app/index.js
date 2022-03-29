@@ -55,7 +55,11 @@ app.use(function (req, res) {
   res.status(404);
   res.end("Not Found");
 });
-
+// app.listen(config.Server.Port, "localhost", () => {
+//   console.log(`app listening at http://localhost:${config.Server.Port}`);
+//   // User.sync();
+//   console.log("server sync");
+// });
 app.listen(config.Server.Port, config.Server.Host, () => {
   console.log(
     `app listening at http://${config.Server.Host}:${config.Server.Port}`

@@ -9,6 +9,8 @@ const routercache = require("./routers/cache.js");
 const routerclient = require("./routers/client.js");
 const routernotification = require("./routers/notification.js");
 const routermeteo = require("./routers/meteo.js");
+const routerplex = require("./routers/plex.js");
+
 app.use(routerUser);
 app.use(routerAutom);
 app.use(routerparam);
@@ -19,6 +21,7 @@ app.use(routercache);
 app.use(routerclient);
 app.use(routernotification);
 app.use(routermeteo);
+app.use(routerplex);
 
 app.use(function (req, res) {
   res.status(404);
