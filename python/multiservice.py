@@ -11,6 +11,7 @@ import random
 import datetime
 from threading import Thread
 import fonction as actions
+import xmltodict
 
 class Thread_custom(Thread):
     def __init__(self, group=None, target=None, name=None,
@@ -65,39 +66,57 @@ def on_execut(cliente, userdata, message):
         " < received message "
         + message.topic
     )
+    # print('ogoo')
     # actions.notify_error(mydb1, message,separation)
     try:
-        print(message.topic, message.payload.decode("utf-8"))
+        #print(message.topic, message.payload.decode("utf-8"))
         if (message.topic != ""):
             splitTopic = message.topic.split("/")
             groupTopic = splitTopic[0]
             clientTopic = splitTopic[1]
-            eventTopic = splitTopic[2]
+
             if(actions.is_exists_client(mydb1,clientTopic)):
+                print(splitTopic ,payload)
                 if(groupTopic == "system"):
+                    eventTopic = splitTopic[2]
                     if(eventTopic == "status"):
-                        actions.listeObjet(mydb1, payload)
+                        actions.listeObjet(mydb1, clientTopic, payload)
                     if(eventTopic == "new"):
                         CLient = actions.add_client_mqtt(mydb1,clientTopic)
                         #client.publish(f"{}", f"401{separation}{CLient}", 0)
-                if(groupTopic != "system"):
+                actions.cache_(mydb1, message)
+                try:
+                    eventTopic = splitTopic[2]
+                    
+                    actions.execute(mydb1, message, client)
+                except:
+                    eventTopic = ""
+                
+                if(groupTopic != "system" and eventTopic != ""):
+                    if(eventTopic == "status"):
+                        actions.listeObjet(mydb1, clientTopic,payload)
                     if(eventTopic == "post"):
                         actions.cache_(mydb1, message)
-                    print(splitTopic)
+                if(groupTopic == "wled"):
+                    eventTopic = splitTopic[2]
+                    if (eventTopic == "v"):
+                        o = xmltodict.parse(payload)
+                        print(json.dumps(o))
+                   # print(splitTopic)
                 # print(payload)
-                    actions.execute(mydb1, message, client)
-                if payload.startswith("400"):  # demanded on client
-                    pay = payload.split(separation)
-                    CLient = actions.add_client_mqtt(mydb1, pay[1])
-                    client.publish(pay[2], f"401{separation}{CLient}", 0)
-                    CLient = ""
-                    if payload.startswith("404"):
-                        print()
-                        #print(actions.listeObjet(mydb1, message))
-                        if payload.startswith("405"):
-                            call_All_Objet(mydb1)
-                        # actions.execute(mydb1, message, client, separation)
-                        # actions.cache_(mydb1, message,separation)
+                
+                # if payload.startswith("400"):  # demanded on client
+                #     pay = payload.split(separation)
+                #     CLient = actions.add_client_mqtt(mydb1, pay[1])
+                #     client.publish(pay[2], f"401{separation}{CLient}", 0)
+                #     CLient = ""
+                #     if payload.startswith("404"):
+                #         print(payload)
+                #         #print(actions.listeObjet(mydb1, message))
+                #         if payload.startswith("405"):
+                #             call_All_Objet(mydb1)
+                #         # actions.execute(mydb1, message, client, separation)
+                #         # actions.cache_(mydb1, message,separation)
             mydb1.close()
     except ValueError as e:
         print()
@@ -118,6 +137,9 @@ def on_disconnect(client, userdata, rc):
     if rc != 0:
         print(f"Unexpected disconnection.{str(userdata)}")
 
+def on_connect(client, userdata, rc):
+    if rc != 0:
+        print(f"Unexpected on_connect.{str(userdata)}")
 
 def callback():
     rc = 0
@@ -129,7 +151,7 @@ client.on_message = on_execut
 client.on_subscribe = on_subscribe
 client.on_publish = on_publish
 client.on_disconnect = on_disconnect
-
+# client.on_connect = on_connect
 def call_All_Objet(mydb):
     actions.initListeObjet(mydb)
     client.publish(f"status/{Client_id}/demande", "")
@@ -139,6 +161,9 @@ ThreadViweLogMqtt.Daemon = True
 
 ThreadMqtt = Thread_custom(target=callback, name="callback")
 ThreadMqtt.Daemon = True
+
+
+
 
 
 
@@ -157,7 +182,7 @@ if config["start"]:
 
     for (titreTopic) in actions.print_titreTopic(mydb2):
         client.subscribe(titreTopic, 2)
-    client.subscribe("$SYS/#", 2)
+    client.subscribe("#", 2)
     lock = True
     mydb2.close()
 
@@ -170,6 +195,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         while True:
             conn, address = s.accept()
             with conn:
+                print(address)
                 mydb = mariadb.connect(
                     host=config["mysql"]["host"],
                     port=config["mysql"]["port"],
@@ -183,6 +209,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                     )
                     > 0
                 ):
+                    print("pass")
                     buff = conn.recv(buff_socket)
                     # message = buff.decode('utf-8')
                     slipte = buff.decode(encode_socket).split(
@@ -203,13 +230,15 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                         if action_1 == "client":
                             conn.sendall(f"list{separation_socket}{actions.liste_client(mydb)}".encode(encode_socket))
                         if action_1 == "cache":
-                            conn.sendall(f"list{separation_socket}{actions.liste_cache(mydb)}".encode(encode_socket))
+                            cache = actions.liste_cache(mydb)
+                            # btrr = len(bytes(cache.encode(encode_socket)))
+                            conn.sendall(f"list{separation_socket}{cache}".encode(encode_socket))
                         if action_1 == "attclient":
                             conn.sendall(f"list{separation_socket}{actions.affiche_client_att(mydb)}".encode(encode_socket))
                         if action_1 == "autom":
                             id_ = slipte[2]
                             exe = actions.liste_autom(mydb,id_)
-                            print("autom" ,exe)
+                            print("autom" ,id_)
                             conn.sendall(f"list{separation_socket}{exe}".encode(encode_socket))
                         if action_1 == "param":
                             id = slipte[2]
@@ -264,7 +293,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                     if action == "objet":
                         if action_1 == "topic":
                             value = slipte[2]
-                            liste = actions.cache_topic(mydb,value,separation)
+                            liste = actions.cache_topic(mydb,value)
                             print(liste)
                             conn.sendall(f"topic{separation_socket}{liste}".encode(encode_socket))
                         if action_1 == "is_co":
@@ -275,7 +304,11 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                         if action_1 == "is_co_res":
                             actions.is_exists_client(mydb,1)
                             conn.sendall(f"is_co_res{separation_socket}true".encode(encode_socket))
-
+                        if action_1 == "exe":
+                            id_ = slipte[2]
+                            json_ = slipte[3]
+                            actions.execute_uno(mydb,client,id_,json_)
+                            conn.sendall(f"objet{separation_socket}exe{separation_socket}true".encode(encode_socket))
                     if action == "add":
                         if action_1 == "client":
                             uid = slipte[2]
@@ -283,10 +316,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                             topic = slipte[4]
                             conn.sendall(f"{actions.add_client(mydb,separation_socket,name,uid,topic)}".encode(encode_socket))
                         if action_1 == "autom":
-                            uid = slipte[2]
-                            name = slipte[3]
-                            topic = slipte[4]
-                            conn.sendall(f"{actions.add_client(mydb,separation_socket,name,uid,topic)}".encode(encode_socket))
+                            json_ = slipte[2]
+                            conn.sendall(f"{actions.add_autom(mydb,separation_socket,json_)}".encode(encode_socket))
                         if action_1 == "param":
                             name = str(slipte[2])
                             param_json = slipte[3]
@@ -319,3 +350,5 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                         if action_1 == "exe":
                             id = slipte[2]
                             conn.sendall(f"{actions.deleted_exe(mydb,separation_socket,id)}".encode(encode_socket))
+                else:
+                    conn.close()

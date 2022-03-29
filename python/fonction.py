@@ -3,6 +3,7 @@
 
 from ast import Return
 import json
+from lib2to3.pytree import convert
 import random
 import datetime
 import time
@@ -10,7 +11,11 @@ import erreur
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 import mariadb
+import xmltodict
 
+def Merge(dict1, dict2):
+    res = {**dict1, **dict2}
+    return res
 
 
 def lire_fichier(fichier):
@@ -166,24 +171,40 @@ def cache_(bbd, message):
         groupTopic = splitTopic[0]
         clientTopic = splitTopic[1]
         eventTopic = splitTopic[2]
-        if eventTopic == "post":
-            mycursor = bbd.cursor()
-            sql = "SELECT id_client FROM `mqttcache` WHERE `id_client` = (SELECT id_client FROM `mqttclient` WHERE `uid` = '{0}')".format(
-                clientTopic
+        mycursor = bbd.cursor()
+        sql = """
+        SELECT id_client,ressult FROM `mqttcache` 
+        WHERE `id_client` = (
+            SELECT id_client 
+            FROM `mqttclient` 
+            WHERE `uid` LIKE '%{0}%'
             )
-            mycursor.execute(sql)
-            myresult = mycursor.fetchall()
-            print("cache_", myresult)
-            if myresult != []:
-                sql = f"UPDATE `mqttcache` SET `ressult`='{payload}' WHERE `id_client` = (SELECT id_client FROM `mqttclient` WHERE `uid` = '{clientTopic}')"
-                print("UPDATE \n")
-                mycursor.execute(sql)
-                bbd.commit()
+        """.format(
+            clientTopic
+        )
+        mycursor.execute(sql)
+        myresult = mycursor.fetchall()
+        # print("cache_", sql)
+        if myresult != []:
+            dists = {}
+            if eventTopic == "v":
+                dists[str(eventTopic)] = xmltodict.parse(payload)
             else:
-                sql = f"INSERT INTO `mqttcache`(`id_topic`, `id_client`, `ressult`) VALUES ((SELECT id_topic FROM `mqtttopic` WHERE topic = '{groupTopic}/#'),(SELECT id_client FROM `mqttclient` WHERE `uid` = '{clientTopic}'), '{payload}')"
-                print("INSERT \n")
-                mycursor.execute(sql)
-                bbd.commit()
+                dists[str(eventTopic)] = json.loads(payload)
+            # print(dists)
+            dbConvertJson = json.loads(myresult[0][1])
+            payConvertJson = dists
+            mergeJson = Merge(dbConvertJson,payConvertJson)
+            sql = f"UPDATE `mqttcache` SET `ressult`= '{json.dumps(mergeJson)}' WHERE `id_client` = (SELECT id_client FROM `mqttclient` WHERE `uid` LIKE '%{clientTopic}%')"
+            # print("UPDATE \n",sql)
+            mycursor.execute(sql)
+            # print(mergeJson)
+            bbd.commit()
+        else:
+            sql = f"INSERT INTO `mqttcache`(`id_client`, `ressult`) VALUES ((SELECT id_client FROM `mqttclient` WHERE `uid`  LIKE '%{clientTopic}%'), '{json.loads(payload)}')"
+            print("INSERT \n")
+            mycursor.execute(sql)
+            bbd.commit()
 
 
 def add_client_mqtt(bbd, uid):
@@ -248,19 +269,27 @@ def initListeObjet(bbd):
     print("all is_alive = 0")
 
 
-def listeObjet(bbd, message):
+def listeObjet(bbd, message, payload):
     mycursor = bbd.cursor()
     mycursor.execute(
-        "SELECT client,uid FROM `mqttclient` WHERE `uid` = "
-        + message
+        f"SELECT client,uid FROM `mqttclient` WHERE `uid` LIKE '%{message}%'"
     )
     myresult = mycursor.fetchall()
     # print(myresult)
+    try:
+        if payload == "online":
+            is_alive = 1
+        elif payload == "offline":
+            is_alive = 0
+        else:
+            is_alive = 1
+    except print(0):
+        pass
+   
+    print("client is alive",is_alive)
     if myresult != []:
-        val = (1, message)
         mycursor.execute(
-            "UPDATE `mqttclient` SET is_alive = %s WHERE uid = %s",
-            val,
+            f"UPDATE `mqttclient` SET is_alive = {is_alive} WHERE `uid` LIKE '%{message}%'"
         )
         bbd.commit()
 
@@ -276,7 +305,7 @@ def liste_code_in(bbd, code_in):
     return liste.count(code_in)
 
 
-def affiche_client_att(bdd):
+def affiche_client_att(bdd):    
     try:
         mycursor = bdd.cursor()
         mycursor.execute(
@@ -326,11 +355,12 @@ def add_client_att(bdd, uid, name=""):
     except bdd.connector.errors.IntegrityError as e:
         return f"erreur_{e}"
 
-
+# probleme topic
 def recherche_execute(bdd, allTopic):
 
     rek = """
-            SELECT id,mqc_e.client,mqc.client,mqe.topic_ex,mqe.condition,mqe.function,mqe.value,mqc.uid,mqc_e.uid  FROM `mqttautom` as mqe 
+            SELECT id,mqc_e.client,mqc.client,mqe.topic_ex,mqe.condition,mqe.function,mqe.value,mqc.uid,mqc_e.uid 
+            FROM `mqttautom` as mqe 
             INNER JOIN `mqttclient` as mqc ON mqe.client_id_in = mqc.id_client
             INNER JOIN `mqttclient` as mqc_e ON mqe.client_id_ex = mqc_e.id_client 
             WHERE mqe.topic_in = '{0}'
@@ -351,8 +381,8 @@ def recherche_execute(bdd, allTopic):
                 value = False
             dis_1 = {
                 "id": line[0],
-                "client_1": line[1],
-                "client_2": line[2],
+                "id_client_in": line[1],
+                "id_client_ex": line[2],
                 "topic_ex": line[3].replace("uid", line[8]),
                 "condition": line[4],
                 "function": line[5],
@@ -400,6 +430,35 @@ def execute(bdd, message, mqtt):
             i = i + 1
             mqtt.publish(value["topic_ex"], json.dumps(envoyValue), 0)
         print("resluta execut",value_response)
+
+
+def execute_uno(bdd,mqtt_client,_id,value_json):
+    sql = f"""
+    SELECT exe.id_exe,exe.id_client,exe.exe,client.topic,client.topic_group,client.uid FROM `mqttexe` as exe
+    INNER JOIN `mqttclient` as client ON exe.id_client = client.id_client
+    WHERE exe.id_exe = {_id}
+    """
+    print(sql)
+    mycursor = bdd.cursor()
+    mycursor.execute(sql)
+    myresult = mycursor.fetchall()
+    if myresult != []:
+        for line in myresult:
+            inJson = json.loads(value_json)
+            exJson = json.loads(line[2])
+            if exJson['mqtt']:
+                exeJson =  Merge(exJson['mqtt'],inJson)
+                exeJson['topic'] = exeJson['topic'].replace("uid", line[5]).replace("topic", line[3]).replace("tgroup", line[4])
+                dis_1 = {
+                    "id_exe": line[0],
+                    "id_client": line[1],
+                    "exe": exeJson,
+                }
+                print(exeJson)
+                mqtt_client.publish(exeJson['topic'],json.dumps(exeJson['value']),0)
+            # if exeJson['curl']:
+            #     print("curl")
+        # return json.dumps(dis)
 
 
 def swich(bdd,value):
@@ -502,9 +561,11 @@ def liste_cache(mydb):
     )
     myresult = mycursor.fetchall()
     dis = []
+    print(myresult)
     for lisCache in myresult:
+        print(lisCache[2])
         dis_1 = {
-            "id_topic": lisCache[0],
+            # "id_topic": str(lisCache[0]),
             "id_client" : lisCache[1],
             "value": json.loads(lisCache[2]),
         }
@@ -527,17 +588,22 @@ def liste_topic(mydb):
     return json.dumps(dis)
 
 
-
 # a voire
 def liste_autom(mydb,id_=""):
-    sqlValue = ""
     if id_ != "":
-         sqlValue = sqlValue + f" WHERE id = {id_}"
-    rek = f"""
+        rek = f"""
+                SELECT id,mqc.client,mqc_e.client,mqe.topic_in,mqe.topic_ex,mqe.condition,mqe.function,mqe.value,mqc.uid,mqc_e.uid   FROM `mqttautom` as mqe
+                INNER JOIN `mqttclient` as mqc_e ON mqe.client_id_ex = mqc_e.id_client 
+                INNER JOIN `mqttclient` as mqc ON mqe.client_id_in = mqc.id_client 
+                WHERE mqe.id = '{id_}'
+            """
+    else:
+        rek = f"""
             SELECT id,mqc.client,mqc_e.client,mqe.topic_in,mqe.topic_ex,mqe.condition,mqe.function,mqe.value,mqc.uid,mqc_e.uid   FROM `mqttautom` as mqe
             INNER JOIN `mqttclient` as mqc_e ON mqe.client_id_ex = mqc_e.id_client 
-            INNER JOIN `mqttclient` as mqc ON mqe.client_id_in = mqc.id_client {sqlValue}
-        """
+            INNER JOIN `mqttclient` as mqc ON mqe.client_id_in = mqc.id_client
+            """
+    print(rek)
     mycursor = mydb.cursor()
     mycursor.execute(rek)
     myresult = mycursor.fetchall()
@@ -550,8 +616,8 @@ def liste_autom(mydb,id_=""):
                 value = False
             dis_1 = {
                 "id": line[0],
-                "client_1": line[1],
-                "client_2": line[2],
+                "id_client_in": line[1],
+                "id_client_ex": line[2],
                 "topic_in": line[3].replace("uid", line[8]),
                 "topic_ex" : line[4].replace("uid", line[9]),
                 "condition": json.loads(line[5]),
@@ -597,6 +663,7 @@ def add_autom(
         mycursor = bdd.cursor()
         mycursor.execute(sql)
         bdd.commit()
+        
         return (
             f"added{separation_socket}exe "
         )
@@ -630,7 +697,6 @@ def update_autom(bdd,payload):
         return f"erreur_"
 
 
-
 def deleted_autom(mydb,separation_socket,id):
     try:
         sql = f"DELETE FROM `mqttautom` WHERE {id}"
@@ -642,6 +708,8 @@ def deleted_autom(mydb,separation_socket,id):
         )
     except mydb.connector.errors.IntegrityError as e:
         return f"erreur_{separation_socket}{e}"
+
+
 
 
 def print_titreTopic(mydb):
@@ -678,9 +746,7 @@ def cache_topic(mydb, topic):
 def is_exists_client(mydb, client):
     mycursor = mydb.cursor()
     mycursor.execute(
-        "SELECT `client` FROM `mqttclient` WHERE `client` = '{0}'".format(
-            client
-        )
+        f"SELECT `client` FROM `mqttclient` WHERE `uid` LIKE '%{client}%'"
     )
     myresult = mycursor.fetchall()
     if myresult == []:
@@ -689,14 +755,6 @@ def is_exists_client(mydb, client):
     else:
         print("client true")
         return True
-
-
-def concat_liste(list):
-    valueReturn = ""
-    for value in list:
-        valueReturn = valueReturn + value
-        print(valueReturn)
-    return valueReturn
 
 
 def add_mqtt_param(mydb,separation_socket,name, param):
@@ -781,18 +839,18 @@ def liste_param(mydb, id = "", name = ""):
 def liste_exe(mydb,id = "", id_client_ = ""):
     try:
         if id != "":
-            sql = f"SELECT id_exe,id_client,exe FROM `mqttexe` WHERE `id_exe` = {id}"
+            sql = f"SELECT id_exe,name,id_client,exe FROM `mqttexe` WHERE `id_exe` = {id}"
         elif id_client_ != "":
-            sql = f"SELECT id_exe,id_client,exe FROM `mqttexe` WHERE `id_client` = {id_client_}"
+            sql = f"SELECT id_exe,name,id_client,exe FROM `mqttexe` WHERE `id_client` = {id_client_}"
         elif id_client_ == "" and id == "":
-            sql = "SELECT id_exe,id_client,exe FROM `mqttexe`"
+            sql = "SELECT id_exe,name,id_client,exe FROM `mqttexe`"
         mycursor = mydb.cursor()
         mycursor.execute(sql)
         myresult = mycursor.fetchall()
         dis = []
         if myresult != []:
             for line in myresult:
-                dis_1 = {"id": line[0], "id_client": line[1], "exe": json.loads(line[2])}
+                dis_1 = {"id": line[0],"name":line[1], "id_client": line[2], "exe": json.loads(line[3])}
                 dis.append(dis_1);
         print(json.dumps(dis))
         return json.dumps(dis)
@@ -803,9 +861,10 @@ def liste_exe(mydb,id = "", id_client_ = ""):
 def add_exe(mydb,separation_socket,payload):
     data = json.loads(payload)
     id_client = data["id_client"]
+    name = data["name"]
     exe_ = json.dumps(data["exe"])
     try:
-        sql = f"INSERT INTO `mqttexe` (`id_client`,`exe`) VALUES ('{id_client}','{exe_}')"
+        sql = f"INSERT INTO `mqttexe` (`id_client`,`name`,`exe`) VALUES ('{id_client}','{name}','{exe_}')"
         print(sql)
         mycursor = mydb.cursor()
         mycursor.execute(sql)
@@ -823,6 +882,8 @@ def update_exe(mydb,separation_socket,payload):
     valuesql = ""
     if data["id_client"] != "":
         valuesql = valuesql + f"`id_client` = '{valuesql['id_client']}',"
+    if data["name"] != "":
+        valuesql = valuesql + f"`name` = '{valuesql['name']}',"
     if data["exe"] != "":
         valuesql = valuesql + f"`exe` = '{valuesql['exe']}',"
     try:
