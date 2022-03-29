@@ -18,7 +18,6 @@ export default function Layout() {
     if(!isLogged){
       navigate('/login')
     }
-    console.log(userApi.test())
   }, [isLogged, navigate])
 
   return (

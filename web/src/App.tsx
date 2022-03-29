@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.css';
 
 import {
@@ -18,7 +18,11 @@ import Lights from './pages/Lights';
 import Light from './pages/Light';
 import Radiators from './pages/Radiators';
 import Radiator from './pages/Radiator';
-function App() {
+import Outlets from './pages/Outlets';
+import Outlet from './pages/Outlet';
+
+export default function App() {
+
   return (
     <div className="App h-full">
       <Provider store={store}>
@@ -31,6 +35,8 @@ function App() {
               <Route path='/lights/:light' element={<Light />}/>
               <Route path='/radiators' element={<Radiators />}/>
               <Route path='/radiators/:radiator' element={<Radiator />}/>
+              <Route path='/outlets' element={<Outlets />}/>
+              <Route path='/outlets/:outlet' element={<Outlet />}/>
             </Route>
           </Routes>
         </BrowserRouter>
@@ -38,5 +44,3 @@ function App() {
     </div>
   );
 }
-
-export default App;
