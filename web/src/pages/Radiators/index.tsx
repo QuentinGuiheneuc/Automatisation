@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import SideBar from '../../components/Weather/SideBar';
 import './styles.css'
 
 export default function Radiators() {
@@ -32,8 +33,8 @@ export default function Radiators() {
   }
 
   return (
-    <div className="w-full h-screen text-white">
-      <span>Radiators</span>
+    <div className="bg-[#100E1D] flex flex-col lg:flex-row">
+      <div> <SideBar /></div>
       <div className='temp-container'>
         <div className='temperature-display-container'>
           <div className={`temperature-display ${temperatureColor}`}>{temperature}°C</div>
@@ -43,6 +44,7 @@ export default function Radiators() {
           <button className='button' onClick={decreaseTemperature}>-</button>
         </div>
       </div>
+     
     </div>
   );
 }

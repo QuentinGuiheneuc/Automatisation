@@ -4,8 +4,6 @@ import { Outlet } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from '../../store/store';
 
-import { userApi } from '../../data/userApi'
-
 import TopBar from './TopBar';
 import SubTopBar from './SubTopBar';
 import LeftMenu from './LeftMenu';
