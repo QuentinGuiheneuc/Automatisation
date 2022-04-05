@@ -16,12 +16,12 @@ export default function LeftMenu() {
 
   return (
     <div className="h-full pb-8">
-      <Link to="/" className="font-title text-white h-8 flex">
+      <Link to="/" className="font-title text-white h-10 flex">
         <span className="m-auto">DASHBOARD</span>
       </Link>
-      <nav className="bg-grey-dark h-full flex flex-col w-36">
+      <nav className="bg-grey-dark h-full flex flex-col w-60">
         <ul className="w-full">
-          <li className="h-8 flex items-center mb-14">
+          <li className="h-10 flex items-center mb-12">
             <MenuButton to="/" text="Home" icon={home_icon} />
           </li>
           <li>
