@@ -1,37 +1,52 @@
-import React from 'react';
+import React from "react";
 
-import MenuButton from '../MenuButton';
-import ProductButtonList from '../ProductButtonList';
+import MenuButton from "../MenuButton";
+import ProductButtonList from "../ProductButtonList";
 
-import home_icon from '../../../assets/icons/home_icon.png';
-import light_icon from '../../../assets/icons/light_icon.png';
-import temperature_icon from '../../../assets/icons/temperature_icon.png';
-import outlet_icon from '../../../assets/icons/outlet_icon.png';
+import home_icon from "../../../assets/icons/home_icon.png";
+import light_icon from "../../../assets/icons/light_icon.png";
+import temperature_icon from "../../../assets/icons/temperature_icon.png";
+import outlet_icon from "../../../assets/icons/outlet_icon.png";
 
-import { Link } from 'react-router-dom';
-import { useAppSelector } from '../../../store/store';
+import { Link } from "react-router-dom";
+import { useAppSelector } from "../../../store/store";
 
 export default function LeftMenu() {
-  const { lights, outlets } = useAppSelector((store) => store.object)
+  const { lights, outlets } = useAppSelector((store) => store.object);
 
   return (
-    <div className='h-full pb-8'>
-      <Link to='/' className='font-title text-white h-8 flex'>
-        <span className='m-auto'>DASHBOARD</span>
+    <div className="h-full pb-8">
+      <Link to="/" className="font-title text-white h-8 flex">
+        <span className="m-auto">DASHBOARD</span>
       </Link>
-      <nav className='bg-grey-dark h-full flex flex-col w-36'>
-        <ul className='w-full'>
-          <li className='h-8 flex items-center mb-14'>
-            <MenuButton to="/" text="Home" icon={home_icon}/>
+      <nav className="bg-grey-dark h-full flex flex-col w-36">
+        <ul className="w-full">
+          <li className="h-8 flex items-center mb-14">
+            <MenuButton to="/" text="Home" icon={home_icon} />
           </li>
           <li>
-            <ProductButtonList to="/lights" text="LIGHTS" icon={light_icon} objects={lights}/>
+            <ProductButtonList
+              to="/lights"
+              text="LIGHTS"
+              icon={light_icon}
+              objects={lights}
+            />
           </li>
-          <li className='pt-6'>
-            <ProductButtonList to="/radiators" text="RADIATORS" icon={temperature_icon} objects={[]}/>
+          <li className="pt-6">
+            <ProductButtonList
+              to="/radiators"
+              text="RADIATORS"
+              icon={temperature_icon}
+              objects={[]}
+            />
           </li>
-          <li className='pt-6'>
-            <ProductButtonList to="/outlets" text="OUTLETS" icon={outlet_icon} objects={outlets}/>
+          <li className="pt-6">
+            <ProductButtonList
+              to="/outlets"
+              text="OUTLETS"
+              icon={outlet_icon}
+              objects={outlets}
+            />
           </li>
         </ul>
       </nav>
