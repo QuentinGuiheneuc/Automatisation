@@ -25,7 +25,7 @@ export default function ColorButton({lightId, color, handleColor}: props) {
     const handleChangeComplete = (newColor: string) => {
         getExeId(lightId)
           .then((responses) => {
-                setObject(responses, {"value": `&CL=${newColor}`})
+                setObject(responses, {"value": `&A=${newColor}`})
           })
     }
 

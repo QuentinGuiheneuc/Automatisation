@@ -27,17 +27,33 @@ export default function LightCard({ light, cache }: props) {
   }
 
   const rgbToHex = (r: string, g: string, b: string): string => {
-    console.log(valueToHex(r))
     return "#" + valueToHex(r) + valueToHex(g) + valueToHex(b);
   }
 
   const [isOpen, setIsOpen] = useState(cache.value.v?.vs?.ac > 0)
   const [color, setColor] = useState(rgbToHex(cache.value.v?.vs?.cl[0], cache.value.v?.vs?.cl[1], cache.value.v?.vs?.cl[2]))
+  const [brightness, setBrightness] = useState(cache.value.v?.vs?.ac / 2.55)
 
   const dispatch = useAppDispatch()
 
+  useEffect(() => {
+    setBrightness(brightness / 2.55)
+  }, [])
+
   const handleColor = (color: string): void => {
     setColor(color)
+  }
+
+  const handleBrightness = (brightness: number): void => {
+    setBrightness(brightness)
+  }
+
+  const handleBrightnessCommitted = (brightness: number) => {
+    const newBrightness: number = brightness * 2.
+    getExeId(light.id_client)
+          .then((responses) => {
+                setObject(responses, {"value": `&SB=${newBrightness}`})
+          })
   }
 
   const handleLight = () => {
@@ -67,7 +83,11 @@ export default function LightCard({ light, cache }: props) {
           <span className='text-grey-light text-xl'>{light.client}</span>
           <div className='flex items-center'>
             <div className='flex w-5/6 items-center mr-1'>
-              <Slider size="small"/>
+              <Slider 
+                size="small"
+                value={brightness}
+                onChangeCommitted={(event, brightness) => handleBrightnessCommitted(brightness as number)} 
+                onChange={(event, brightness) => handleBrightness(brightness as number)}/>
             </div>
             <ColorButton lightId={light.id_client} color={color} handleColor={handleColor} />
           </div>
