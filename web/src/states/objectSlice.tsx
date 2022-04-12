@@ -1,5 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
+
 import { ConnectedObject } from "../types/ConnectedObject";
+import { Cache } from '../types/Cache';
 
 const getLights = (lights: Array<ConnectedObject>)  => {
     return lights.filter((element: ConnectedObject) => {
@@ -25,7 +27,8 @@ export const objectSlice = createSlice({
     initialState: {
         lights: Array<ConnectedObject>(),
         outlets: Array<ConnectedObject>(),
-        radiators: Array<ConnectedObject>()
+        radiators: Array<ConnectedObject>(),
+        cache: Array<Cache>()
     },
     reducers: {
         setObjects: (state, action) => {
@@ -41,9 +44,12 @@ export const objectSlice = createSlice({
         },
         setRadiator: (state, action) => {
             state.radiators = getRadiators(action.payload)
+        },
+        setCache: (state, action) => {
+            state.cache = action.payload
         }
     },
 });
 
-export const { setObjects, setLights, setOutlets, setRadiator } = objectSlice.actions;
+export const { setObjects, setLights, setOutlets, setRadiator, setCache } = objectSlice.actions;
 export default objectSlice.reducer;

@@ -4,7 +4,7 @@ import MenuButton from '../MenuButton';
 import ProductButtonList from '../ProductButtonList';
 
 import home_icon from '../../../assets/icons/home_icon.png';
-import light_icon from '../../../assets/icons/light_icon.png';
+import light_icon from '../../../assets/icons/light_close_icon.svg';
 import temperature_icon from '../../../assets/icons/temperature_icon.png';
 import outlet_icon from '../../../assets/icons/outlet_icon.png';
 

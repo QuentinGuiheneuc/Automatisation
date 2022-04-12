@@ -6,9 +6,9 @@ import { NavigateFunction, useNavigate } from 'react-router-dom';
 
 import { useAppDispatch } from '../../store/store'
 import { login } from '../../states/authSlice';
-import { setObjects } from '../../states/objectSlice'
+import { setObjects, setCache } from '../../states/objectSlice'
 import { userApi } from '../../data/userApi';
-import { getObjects } from '../../data/objectApi';
+import { getObjects, getCache } from '../../data/objectApi';
 import { ConnectedObject } from '../../types/ConnectedObject';
 
 export default function Login() {
@@ -31,15 +31,19 @@ export default function Login() {
         e.preventDefault();
 
         userApi.login(user.email, user.password)
-            .then(reponse => {
+            .then(async(reponse) => {
                 if (reponse.error) {
                     setError('Bad login')
                     console.log(reponse.error)
                 } else {
                     dispatch(login(reponse[0]))
-                    getObjects()
+                    await getObjects()
                         .then((responses: Array<ConnectedObject>) => {
                             dispatch(setObjects(responses))
+                        })
+                    await getCache()
+                        .then((responses: Array<Object>) => {
+                            dispatch(setCache(responses))
                         })
                     navigate('/')
                 }
