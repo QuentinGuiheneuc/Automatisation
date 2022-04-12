@@ -73,8 +73,7 @@ class MeteoDon extends ORMMeteoDo {
       return false;
     }
   };
-  token =
-    "?token=499f489bf9d0e41b8535c55a6396880923a99780eb27a0231173f2000e12f006";
+  token = `?token=${process.env.METEOTOKEN}`;
   insee = "";
   UpdateObject = (insee) => {
     return new Promise((resolve, reject) => {

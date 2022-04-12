@@ -2,7 +2,6 @@ const router = require("express").Router();
 const client = require("../connexionSocket");
 
 router.get("/client", (req, res, next) => {
-  client.objetIsCo();
   client
     .listsClient()
     .then((value) => {
