@@ -1,7 +1,8 @@
 import * as React from 'react';
 import Drawer from '@mui/material/Drawer';
-import { IconButton, Typography } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
+import { Grid, IconButton, Typography } from '@mui/material';
+import CloudIcon from '@mui/icons-material/Cloud';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import SearchLocation from '../SearchLocation';
 
 
@@ -14,35 +15,40 @@ export function SideBar() {
   };
 
   return (
-    <div>
+    <Grid container>
+        <Grid container wrap='nowrap' justifyContent='flex-end'>
+      
+        <Typography color={"#4ECCEC"} sx={{marginTop: 4}}>Méteo</Typography>
       <IconButton
-            sx={{color: "white"}}
-            aria-label="open drawer"
-            edge="end"
-            onClick={handleDrawer}
-          > <MenuIcon /> 
-          </IconButton>
-          <Drawer
+        sx={{ color: "#4ECCEC", marginRight: 3, marginTop: 3 }}
+        aria-label="open drawer"
+        onClick={handleDrawer}
+      > <CloudIcon />
+      </IconButton>
+  
+      </Grid>
+      <Drawer
         sx={{
-          width: 400,
+          width: 100,
           flexShrink: 0,
           "& .MuiPaper-root": {
-            top: "61px",
+            top: "67px",
           }
         }}
         variant="persistent"
         anchor="right"
         open={open}
       >
-          <IconButton onClick={handleDrawer}>
-          <MenuIcon /> 
-          </IconButton>
-          <Typography>Méteo</Typography>
-          <SearchLocation onClose={(): void =>{"bonjour"}}/>
-          </Drawer>
-          </div>
-      )}
-  
+        <IconButton onClick={handleDrawer}>
+          <ArrowBackIosNewIcon />
+        </IconButton>
+        <Typography>Méteo</Typography>
+        <SearchLocation onClose={(): void => { "bonjour" }} />
+      </Drawer>
+    </Grid>
+  )
+}
+
 
 
 export default SideBar;

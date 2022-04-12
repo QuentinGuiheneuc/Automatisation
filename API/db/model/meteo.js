@@ -182,7 +182,7 @@ class MeteoDon extends ORMMeteoDo {
             });
         })
         .catch((err) => {
-          reject(err.message);
+          reject(err);
         });
     });
   };

@@ -1,12 +1,10 @@
-import React from "react";
-
 import { useLocation } from "react-router-dom";
 
-import SearchBar from "../../SearchBar";
-import NotificationIcon from "../../NotificationIcon";
+// import SearchBar from "../../SearchBar";
+// import NotificationIcon from "../../NotificationIcon";
 
-import error_icon from "../../../assets/icons/error_icon.png";
-import notification_icon from "../../../assets/icons/notification_icon.png";
+// import error_icon from "../../../assets/icons/error_icon.png";
+// import notification_icon from "../../../assets/icons/notification_icon.png";
 
 export default function SubTopBar() {
   const pathname: string = useLocation().pathname;
@@ -24,16 +22,16 @@ export default function SubTopBar() {
       </div>
       <div className="flex flex-row">
         <div className="flex flex-row items-center space-x-2 mr-24">
-          <NotificationIcon
-            nbNotifications={10}
+          {/* <NotificationIcon
+            nbNotifications={0}
             icon={notification_icon}
             className="h-6 w-6"
           />
           <NotificationIcon
-            nbNotifications={1}
+            nbNotifications={0}
             icon={error_icon}
             className="h-6 w-6"
-          />
+          /> */}
         </div>
         {/* <SearchBar /> */}
       </div>

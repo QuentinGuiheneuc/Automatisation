@@ -25,7 +25,6 @@ interface SearchLocationProps {
         <div className="mt-20">
           <button className="hover:border border-gray-250 px-4 py-6 w-full flex justify-between">
             <p>Bordeaux</p>
-            <i className="fas fa-chevron-right text-gray-350"></i>
           </button>
         </div>
       </div>
