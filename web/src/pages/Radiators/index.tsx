@@ -1,50 +1,53 @@
-import { useState } from 'react';
+import { Grid } from '@mui/material';
 import SideBar from '../../components/Weather/SideBar';
-import './styles.css'
+// import './styles.css'
 
 export default function Radiators() {
-  const [temperature, setTemperature] = useState(10);
-  const [temperatureColor, setTemperatureColor] = useState('cold')
+  // const [temperature, setTemperature] = useState(10);
+  // const [temperatureColor, setTemperatureColor] = useState('cold')
 
-  const increaseTemperature = () => {	
-    const newTemperature = temperature + 1;
-    setTemperature(newTemperature);
+  // const increaseTemperature = () => {	
+  //   const newTemperature = temperature + 1;
+  //   setTemperature(newTemperature);
   
-    if (newTemperature >= 15) {
-      setTemperatureColor('hot');
-    }
+  //   if (newTemperature >= 15) {
+  //     setTemperatureColor('hot');
+  //   }
   
-    if (newTemperature > 35) {
-      setTemperature(35)
-    }
-  }
+  //   if (newTemperature > 35) {
+  //     setTemperature(35)
+  //   }
+  // }
 
-  const decreaseTemperature = () => {
-    const newTemperature = temperature - 1;
-    setTemperature(newTemperature)
+  // const decreaseTemperature = () => {
+  //   const newTemperature = temperature - 1;
+  //   setTemperature(newTemperature)
 
-    if (newTemperature < 15) {
-      setTemperatureColor('cold')
-    }
+  //   if (newTemperature < 15) {
+  //     setTemperatureColor('cold')
+  //   }
 
-    if (newTemperature < -25) {
-      setTemperature(-25)
-    }
-  }
+  //   if (newTemperature < -25) {
+  //     setTemperature(-25)
+  //   }
+  // }
 
   return (
-    <div className="bg-[#100E1D] flex flex-col lg:flex-row">
-      <div> <SideBar /></div>
-      <div className='temp-container'>
-        <div className='temperature-display-container'>
-          <div className={`temperature-display ${temperatureColor}`}>{temperature}°C</div>
-        </div>
-        <div className='button-container'>
-          <button className='button' onClick={increaseTemperature}>+</button>
-          <button className='button' onClick={decreaseTemperature}>-</button>
-        </div>
-      </div>
-     
-    </div>
+    // <div className="bg-[#100E1D] flex flex-col lg:flex-row">
+    //   <div> <SideBar /></div>
+    //   <div className='temp-container'>
+    //     <div className='temperature-display-container'>
+    //       <div className={`temperature-display ${temperatureColor}`}>{temperature}°C</div>
+    //     </div>
+    //     <div className='button-container'>
+    //       <button className='button' onClick={increaseTemperature}>+</button>
+    //       <button className='button' onClick={decreaseTemperature}>-</button>
+    //     </div>
+    //   </div>
+    // </div>
+
+    <Grid>
+      <SideBar />
+    </Grid>
   );
 }
