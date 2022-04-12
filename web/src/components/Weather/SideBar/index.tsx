@@ -17,7 +17,6 @@ export function SideBar() {
   return (
     <Grid container>
         <Grid container wrap='nowrap' justifyContent='flex-end'>
-      
         <Typography color={"#4ECCEC"} sx={{marginTop: 4}}>Méteo</Typography>
       <IconButton
         sx={{ color: "#4ECCEC", marginRight: 3, marginTop: 3 }}
@@ -33,17 +32,19 @@ export function SideBar() {
           flexShrink: 0,
           "& .MuiPaper-root": {
             top: "67px",
+            backgroundColor: "#4ECCEC",
+            textDecorationColor: "white"
           }
         }}
         variant="persistent"
         anchor="right"
         open={open}
       >
-        <IconButton onClick={handleDrawer}>
+        <IconButton onClick={handleDrawer} sx={{color: "white"}}>
           <ArrowBackIosNewIcon />
         </IconButton>
-        <Typography>Méteo</Typography>
-        <SearchLocation onClose={(): void => { "bonjour" }} />
+        <Typography color={"white"} >Méteo</Typography>
+        <SearchLocation />
       </Drawer>
     </Grid>
   )
