@@ -27,9 +27,9 @@ export async function getExeId(idClient: number) {
     }
 }
 
-export async function setObject(id: number, param: string) {
+export async function setObject(id: number, param: any) {
     try {
-        const response = await API.post(`/objetexe`, {param: param, id: id})
+        const response = await API.post(`/objetexe`, {param: JSON.stringify(param), id: id})
         return Promise.resolve(response.data)
     } catch (err) {
         return Promise.reject(err)

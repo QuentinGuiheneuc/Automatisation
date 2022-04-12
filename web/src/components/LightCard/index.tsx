@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { ConnectedObject } from '../../types/ConnectedObject';
 import { Cache } from '../../types/Cache';
@@ -12,19 +12,38 @@ import disconnected_icon from '../../assets/icons/disconnected_icon.svg'
 import { useAppDispatch } from '../../store/store'
 import { setLights } from '../../states/objectSlice'
 
+import Slider from '@mui/material/Slider'
+import ColorButton from '../ColorButton'
+
 type props = {
   light: ConnectedObject
   cache: Cache
 }
 
 export default function LightCard({ light, cache }: props) {
+  const valueToHex = (value: string) => {
+    var hex = parseInt(value).toString(16);
+    return hex.length == 1 ? "0" + hex : hex;
+  }
+
+  const rgbToHex = (r: string, g: string, b: string): string => {
+    console.log(valueToHex(r))
+    return "#" + valueToHex(r) + valueToHex(g) + valueToHex(b);
+  }
+
   const [isOpen, setIsOpen] = useState(cache.value.v?.vs?.ac > 0)
+  const [color, setColor] = useState(rgbToHex(cache.value.v?.vs?.cl[0], cache.value.v?.vs?.cl[1], cache.value.v?.vs?.cl[2]))
+
   const dispatch = useAppDispatch()
+
+  const handleColor = (color: string): void => {
+    setColor(color)
+  }
 
   const handleLight = () => {
     getExeId(light.id_client)
       .then(async(responses) => {
-        await setObject(responses, JSON.stringify({"value": isOpen? "&T=0":"&T=1"}))
+        await setObject(responses, {"value": isOpen? "&T=0":"&T=1"})
                 .then((responses) => {
                   setIsOpen(!isOpen)
                 })
@@ -40,14 +59,17 @@ export default function LightCard({ light, cache }: props) {
         <div className='relative bg-grey-dark max-w-max p-5 ml-2 mt-2'>
           {cache.value.status === 'offline' &&
             <>
-              <img src={disconnected_icon} className='absolute right-2 top-2 h-5 w-5 z-10'/>
+              <img src={disconnected_icon} className='absolute right-2 top-2 h-5 w-5 z-50'/>
               <div className='absolute w-full h-full bg-black-transparent top-0 left-0'/>
             </>
           }
           <img src={isOpen? light_open_icon : light_close_icon} onClick={handleLight} alt='light icon' className='w-28 h-28 mb-2 cursor-pointer' />
           <span className='text-grey-light text-xl'>{light.client}</span>
-          <div>
-
+          <div className='flex items-center'>
+            <div className='flex w-5/6 items-center mr-1'>
+              <Slider size="small"/>
+            </div>
+            <ColorButton lightId={light.id_client} color={color} handleColor={handleColor} />
           </div>
         </div>
       }
