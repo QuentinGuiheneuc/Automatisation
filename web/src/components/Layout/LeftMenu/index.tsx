@@ -3,10 +3,10 @@ import React from "react";
 import MenuButton from "../MenuButton";
 import ProductButtonList from "../ProductButtonList";
 
-import home_icon from '../../../assets/icons/home_icon.png';
-import light_icon from '../../../assets/icons/light_close_icon.svg';
-import temperature_icon from '../../../assets/icons/temperature_icon.png';
-import outlet_icon from '../../../assets/icons/outlet_icon.png';
+import home_icon from "../../../assets/icons/home_icon.png";
+import light_icon from "../../../assets/icons/light_close_icon.svg";
+import temperature_icon from "../../../assets/icons/temperature_icon.png";
+import outlet_icon from "../../../assets/icons/outlet_icon.png";
 
 import { Link } from "react-router-dom";
 import { useAppSelector } from "../../../store/store";
@@ -16,7 +16,7 @@ export default function LeftMenu() {
 
   return (
     <div className="h-full pb-8">
-      <Link to="/" className="font-title text-white h-10 flex">
+      <Link to="/" className="font-title text-white h-7 flex">
         <span className="m-auto">DASHBOARD</span>
       </Link>
       <nav className="bg-grey-dark h-full flex flex-col w-60">
