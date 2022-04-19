@@ -23,7 +23,7 @@ type props = {
 export default function LightCard({ light, cache }: props) {
   const valueToHex = (value: string) => {
     var hex = parseInt(value).toString(16);
-    return hex.length == 1 ? "0" + hex : hex;
+    return hex.length === 1 ? "0" + hex : hex;
   };
 
   const rgbToHex = (r: string, g: string, b: string): string => {
@@ -46,12 +46,8 @@ export default function LightCard({ light, cache }: props) {
     )
   );
   const [brightness, setBrightness] = useState(cache.value.v?.vs?.ac / 2.55);
-
+  
   const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    setBrightness(brightness / 2.55);
-  }, []);
 
   const handleColor = (color: string): void => {
     setColor(color);
@@ -73,7 +69,7 @@ export default function LightCard({ light, cache }: props) {
   const handleLight = () => {
     getExeId(light.id_client).then(async (responses) => {
       await setObject(responses, { value: isOpen ? "&T=0" : "&T=1" }).then(
-        (responses) => {
+        () => {
           setIsOpen(!isOpen);
         }
       );
@@ -85,12 +81,13 @@ export default function LightCard({ light, cache }: props) {
   return (
     <>
       {cache && (
-        <div className="relative bg-grey-dark max-w-max p-5 ml-2 mt-2">
+        <div className="relative flex flex-col items-center bg-grey-dark w-1/6 p-5 ml-2 mt-2">
           {cache.value.status === "offline" && (
             <>
               <img
                 src={disconnected_icon}
                 className="absolute right-2 top-2 h-5 w-5 z-50"
+                alt='disconnected icon'
               />
               <div className="absolute w-full h-full bg-black-transparent top-0 left-0" />
             </>
@@ -102,8 +99,8 @@ export default function LightCard({ light, cache }: props) {
             className="w-28 h-28 mb-2 cursor-pointer"
           />
           <span className="text-grey-light text-xl">{light.client}</span>
-          <div className="flex items-center">
-            <div className="flex w-5/6 items-center mr-1">
+          <div className="flex items-center space-x-2 w-full">
+            <div className="flex w-5/6 items-center">
               <Slider
                 size="small"
                 value={brightness}
@@ -116,13 +113,13 @@ export default function LightCard({ light, cache }: props) {
               />
             </div>
             <ColorButton
-              commende="&CL"
+              command="&CL"
               lightId={light.id_client}
               color={color}
               handleColor={handleColor}
             />
             <ColorButton
-              commende="&C2"
+              command="&C2"
               lightId={light.id_client}
               color={color2}
               handleColor={handleColor2}

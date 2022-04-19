@@ -11,7 +11,7 @@ type props = {
 export default function ProductButtonList({ to, text, icon, objects }: props) {
 
     return (
-        <li>
+        <div>
             <ul className='space-y-3'>
                 <MenuButton to={`${to}`} text={text} icon={icon}/>
                 {objects.map((object: ConnectedObject) => {
@@ -22,6 +22,6 @@ export default function ProductButtonList({ to, text, icon, objects }: props) {
                     )
                 })}
             </ul>
-        </li>
+        </div>
     );
 }

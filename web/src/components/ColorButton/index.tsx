@@ -2,27 +2,21 @@ import React, { useState } from "react";
 
 import { ChromePicker } from "react-color";
 
-import { ConnectedObject } from "../../types/ConnectedObject";
-
-import { getExeId, getObjects, setObject } from "../../data/objectApi";
-
-import { useAppDispatch } from "../../store/store";
-import { setLights } from "../../states/objectSlice";
+import { getExeId, setObject } from "../../data/objectApi";
 
 type props = {
-  commende: string;
+  command: string;
   lightId: number;
   color: string;
   handleColor: (color: string) => void;
 };
 
 export default function ColorButton({
-  commende,
+  command,
   lightId,
   color,
   handleColor,
 }: props) {
-  const dispatch = useAppDispatch();
   const [isColorPicker, setIsColorPicker] = useState(false);
   const handleClick = (): void => {
     setIsColorPicker(!isColorPicker);
@@ -30,7 +24,7 @@ export default function ColorButton({
 
   const handleChangeComplete = (newColor: string) => {
     getExeId(lightId).then((responses) => {
-      setObject(responses, { value: `${commende}=${newColor}` });
+      setObject(responses, { value: `${command}=${newColor}` });
     });
   };
 
