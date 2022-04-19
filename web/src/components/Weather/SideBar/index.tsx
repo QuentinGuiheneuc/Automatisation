@@ -16,15 +16,14 @@ export function SideBar() {
 
   return (
     <Grid container>
-        <Grid container wrap='nowrap' justifyContent='flex-end'>
-        <Typography color={"#4ECCEC"} sx={{marginTop: 4}}>Méteo</Typography>
-      <IconButton
-        sx={{ color: "#4ECCEC", marginRight: 3, marginTop: 3 }}
-        aria-label="open drawer"
-        onClick={handleDrawer}
-      > <CloudIcon />
-      </IconButton>
-  
+      <Grid container wrap='nowrap' justifyContent='flex-end'>
+        <Typography color={"#4ECCEC"} sx={{ marginTop: 4 }}>Méteo</Typography>
+        <IconButton
+          sx={{ color: "#4ECCEC", marginRight: 3, marginTop: 3 }}
+          aria-label="open drawer"
+          onClick={handleDrawer}
+        > <CloudIcon />
+        </IconButton>
       </Grid>
       <Drawer
         sx={{
@@ -40,16 +39,18 @@ export function SideBar() {
         anchor="right"
         open={open}
       >
-        <IconButton onClick={handleDrawer} sx={{color: "white"}}>
-          <ArrowBackIosNewIcon />
-        </IconButton>
-        <Typography color={"white"} >Méteo</Typography>
+        <Grid container >
+          <Grid item xs={5}>
+            <IconButton onClick={handleDrawer} sx={{ color: "white", marginTop: 2 }}>
+              <ArrowBackIosNewIcon />
+            </IconButton>
+          </Grid>
+          <Typography sx={{ marginTop: 2.5 }} color={"white"} fontSize={20}>Méteo</Typography>
+        </Grid>
         <SearchLocation />
       </Drawer>
     </Grid>
   )
 }
-
-
 
 export default SideBar;

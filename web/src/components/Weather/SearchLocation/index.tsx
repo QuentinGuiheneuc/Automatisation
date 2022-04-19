@@ -30,12 +30,12 @@ const SearchLocation: React.FC = () => {
   }
 
   return (
-    <div className="text-black">
+    <div className="text-white">
       <form onSubmit={handleSubmit}>
         <div className="flex justify-between my-5 space-x-4">
           <input
             type="text"
-            className="border border-gray-150 bg-transparent p-3 flex-grow"
+            className="border border-white bg-transparent p-3 flex-grow placeholder-white focus:outline-none"
             placeholder="Ville"
             onChange={handleChange}
           />
