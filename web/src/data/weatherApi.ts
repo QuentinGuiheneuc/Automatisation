@@ -26,7 +26,7 @@ export async function donnerMeteo() {
 
 export async function saveCity(allCity: object) {
   try {
-    const response = await API.post(`/meteo/param`, allCity);
+    const response = await API.patch(`/meteo/param`, allCity);
     return Promise.resolve(response.data);
   } catch (err) {
     return Promise.reject(err);
