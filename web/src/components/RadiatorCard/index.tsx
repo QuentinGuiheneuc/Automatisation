@@ -19,7 +19,7 @@ type props = {
 
 export default function RadiatorCard({ radiator, cache }: props) {
 
-  const [isOpen, setIsOpen] = useState(cache.value.v?.vs?.ac > 0);
+  const [isOpen, setIsOpen] = useState(false);
   const dispatch = useAppDispatch();
 
   const handleRadiator = () => {

@@ -37,7 +37,7 @@ const SearchLocation: React.FC = () => {
   return (
     <div className="text-white">
       <form onSubmit={handleSubmit}>
-        <div className="flex justify-between my-5 space-x-4">
+        <div className="flex justify-between mt-4 ml-4">
           <input
             type="text"
             className="border border-white bg-transparent p-3 flex-grow placeholder-white focus:outline-none"
@@ -50,12 +50,12 @@ const SearchLocation: React.FC = () => {
         </div>
       </form>
       <div>{UseCity}</div>
-      <div className="mt-20">
-        <button className="hover:border border-gray-250 px-4 py-6 w-full flex justify-between">
+      <div>
+        <button className="hover:border border-gray-250 ml-4 mt-5 w-full flex justify-between align-top">
           {cityChoice !== undefined && (
             <List>
               {cityChoice.map((item) => (
-                <ListCity key={item.id_insee} donner={item}>
+                <ListCity key={item.id_insee} data={item}>
                   {item.nom}
                 </ListCity>
               ))}
@@ -68,7 +68,3 @@ const SearchLocation: React.FC = () => {
 };
 
 export default SearchLocation;
-
-{
-  /* <ListItem key={item.id_insee}>{item.nom}</ListItem> */
-}

@@ -1,22 +1,24 @@
+import { List } from "@mui/material";
 import { weatherAPI } from "../../../data/weatherApi";
 
-const handleCityChange = (donner: object) => {
-  weatherAPI.saveCity(donner).then(async (reponse) => {
+const handleCityChange = (data: object) => {
+  console.log(data);
+  weatherAPI.saveCity(data).then(async (reponse) => {
     console.log(reponse);
   });
 };
 
-export default function ListCity({ donner }: any, name: string) {
+export default function ListCity({ data }: any, name: string) {
   return (
-    <li className="MuiListItem-root MuiListItem-gutters MuiListItem-padding css-1p823my-MuiListItem-root">
+    <List >
       <button
         type="button"
         onClick={() => {
-          handleCityChange(donner);
+          handleCityChange(data);
         }}
       >
-        {donner.nom}
+        {data.nom}
       </button>
-    </li>
+    </List>
   );
 }
