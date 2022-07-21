@@ -1,0 +1,18 @@
+version: "3"
+services:
+  apiDomo:
+    container_name: apiDomo
+    image: api_domo:latest
+    # For DHCP it is recommended to remove these ports and instead add: network_mode: "host"
+    ports:
+      - "3007:3007"
+    environment:
+      TZ: "Europe/Paris"
+      HOSTSERVERPYTHON: "192.168.1.39"
+      PORTSERVERPYTHON: "65000"
+      HOSTBD: "192.168.1.39"
+      PASSWDBD: "root"
+      HOST: "localhost"
+      METEOTOKEN: "499f489bf9d0e41b8535c55a6396880923a99780eb27a0231173f2000e12f006"
+    # Volumes store your data between container upgrades
+    restart: unless-stopped
