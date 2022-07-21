@@ -1,15 +1,20 @@
 const router = require("express").Router();
 const User = require("../../db/model/users");
-router.get("/users", (req, res, next) => {
+const auth = require("../function/auth");
+
+router.get("/users", auth, (req, res, next) => {
+  let user = req.authorization;
+  console.log(user);
   try {
-    User.findAll()
-      .then((value) => {
-        res.json(value);
-      })
-      .catch((err) => {
-        res.status(501).json({ error: err.message });
-        res.end();
-      });
+    res.json(user);
+    // User.findAll()
+    //   .then((value) => {
+    //     res.json(value);
+    //   })
+    //   .catch((err) => {
+    //     res.status(501).json({ error: err.message });
+    //     res.end();
+    //   });
   } catch (err) {
     console.log(err);
     return res.status(500).json({ error: "Something went wrong" });
@@ -32,6 +37,7 @@ router.get("/users/:id", (req, res, next) => {
     return res.status(500).json({ error: "Something went wrong" });
   }
 });
+
 router.post("/users", (req, res, next) => {
   //bcrypt.hashSync(params.password, 10);
   if (!req.body.user || !req.body.password) {

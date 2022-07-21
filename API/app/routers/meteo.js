@@ -1,5 +1,7 @@
 const router = require("express").Router();
 const { MeteoInsee, MeteoDonner, MeteoParam } = require("../../db/model/meteo");
+const auth = require("../function/auth.js");
+
 router.get("/meteo", (req, res, next) => {
   try {
     MeteoInsee.findAll()
@@ -33,7 +35,7 @@ router.get("/meteo/search", (req, res, next) => {
   }
 });
 
-router.get("/meteo/donner", (req, res, next) => {
+router.get("/meteo/donner", auth, (req, res, next) => {
   try {
     // const allUsers = User.findAll();
     // res.send(allUsers);

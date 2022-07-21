@@ -9,11 +9,15 @@ app.use(bodyParser.json());
 app.use(function (req, res, next) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Credentials", "true");
-  res.setHeader("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT,PATCH");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET,HEAD,OPTIONS,POST,PUT,PATCH"
+  );
   res.setHeader(
     "Access-Control-Allow-Headers",
-    "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers"
+    "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers,Authorization"
   );
+  //res.setHeader("Access-Control-Allow-Headers", "Authorization");
   next();
 });
 app.use(express.static(__dirname + "/public"));
@@ -65,5 +69,5 @@ app.listen(config.Server.Port, config.Server.Host, () => {
     `app listening at http://${config.Server.Host}:${config.Server.Port}`
   );
   // User.sync();
-  console.log("server sync");
+  console.log("server sync", config);
 });

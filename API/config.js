@@ -1,3 +1,5 @@
+const dotenv = require("dotenv");
+dotenv.config({ path: ".env" });
 module.exports = {
   TypeBD: process.env.TYPEBD || "mariadb",
   BD: {
@@ -5,7 +7,7 @@ module.exports = {
     Host: process.env.HOSTBD || "192.168.1.39",
     Port: process.env.PORTBD || 3306,
     User: process.env.USERBD || "root",
-    Password: process.env.PASSWDBD || "root",
+    Password: process.env.PASSWDBD || "",
     Database: process.env.DATABASEBD || "bbd_projet",
   },
   Server: {
@@ -14,7 +16,7 @@ module.exports = {
   },
   socket: {
     serverofpython: {
-      host: process.env.HOSTSERVERPYTHON || "192.168.1.39",
+      host: process.env.HOSTSERVERPYTHON || "quentinguiheneuc.fr",
       port: process.env.PORTSERVERPYTHON || 65000,
       separation: process.env.SEPARATORSERVERPYTHON || ";",
     },
