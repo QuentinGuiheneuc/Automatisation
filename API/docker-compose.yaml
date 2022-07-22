@@ -12,7 +12,7 @@ services:
       PORTSERVERPYTHON: "65000"
       HOSTBD: "192.168.1.39"
       PASSWDBD: "root"
-      HOST: "172.27.0.2"
+      HOST: "api_Domo"
       METEOTOKEN: "499f489bf9d0e41b8535c55a6396880923a99780eb27a0231173f2000e12f006"
     # Volumes store your data between container upgrades
     restart: unless-stopped
