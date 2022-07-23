@@ -3,7 +3,7 @@ const config = require("../config.js");
 const route = require("./router.js");
 const app = express();
 const bodyParser = require("body-parser");
-
+const os = require("os");
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(function (req, res, next) {
@@ -54,7 +54,21 @@ app.use(route);
 //       res.end();
 //     });
 // });
-
+const nets = os.networkInterfaces();
+const results = Object.create(null);
+for (const name of Object.keys(nets)) {
+  for (const net of nets[name]) {
+    // Skip over non-IPv4 and internal (i.e. 127.0.0.1) addresses
+    // 'IPv4' is in Node <= 17, from 18 it's a number 4 or 6
+    const familyV4Value = typeof net.family === "string" ? "IPv4" : 4;
+    if (net.family === familyV4Value && !net.internal) {
+      if (!results[name]) {
+        results[name] = [];
+      }
+      results[name].push(net.address);
+    }
+  }
+}
 app.use(function (req, res) {
   res.status(404);
   res.end("Not Found");
@@ -70,4 +84,5 @@ app.listen(config.Server.Port, config.Server.Host, () => {
   );
   // User.sync();
   console.log("server sync", config);
+  console.log(results);
 });
