@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import { ConnectedObject } from "../../types/ConnectedObject";
 
-import { getExeId, getObjects, setObject } from "../../data/objectApi";
+import { getExeId, getObjectsAPI, setObject } from "../../data/objectApi";
 
 import light_close_icon from "../../assets/icons/light_close_icon.svg";
 import light_open_icon from "../../assets/icons/light_open_icon.svg";
@@ -16,10 +16,8 @@ type props = {
 };
 
 export default function ClassicLightCard({ name, isLightOpen }: props) {
-  
   const [isOpen, setIsOpen] = useState(isLightOpen);
   const dispatch = useAppDispatch();
-
 
   const handleLight = () => {
     getExeId(4).then(async (responses) => {
@@ -28,22 +26,22 @@ export default function ClassicLightCard({ name, isLightOpen }: props) {
           setIsOpen(!isOpen);
         }
       );
-      await getObjects().then((responses: Array<ConnectedObject>) => {
+      await getObjectsAPI().then((responses: Array<ConnectedObject>) => {
         dispatch(setLights(responses));
       });
     });
   };
   return (
     <>
-        <div className="relative flex flex-col items-center bg-grey-dark w-1/6 p-5 ml-2 mt-2">
-          <img
-            src={isOpen ? light_open_icon : light_close_icon}
-            onClick={handleLight}
-            alt="light icon"
-            className="w-28 h-28 mb-2 cursor-pointer"
-          />
-          <span className="text-grey-light text-xl">{name}</span>
-        </div>
+      <div className="relative flex flex-col items-center bg-grey-dark w-1/6 p-5 ml-2 mt-2">
+        <img
+          src={isOpen ? light_open_icon : light_close_icon}
+          onClick={handleLight}
+          alt="light icon"
+          className="w-28 h-28 mb-2 cursor-pointer"
+        />
+        <span className="text-grey-light text-xl">{name}</span>
+      </div>
     </>
   );
 }

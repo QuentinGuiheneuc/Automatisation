@@ -3,23 +3,25 @@ import React from "react";
 import profile_icon from "../../../assets/icons/profile_icon.png";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../store/store";
-import { logout } from "../../../states/authSlice";
+import { logout } from "../../../states/userSlice";
 import ColoredButton from "../../ColoredButton";
+import localTokenSet from "../../../data/localStokage";
 
 export default function TopBar() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const { user } = useAppSelector((store) => store.auth);
+  const { user } = useAppSelector((store) => store.user);
 
-  const handleClick = () => {
+  const handleClickLogout = () => {
     dispatch(logout());
+    localTokenSet({});
     navigate("/login");
   };
 
   const icon: string =
     user.path_img.length > 0
-      ? `http://localhost:3007${user.path_img}`
+      ? `http://192.168.1.6:3007${user.path_img}`
       : profile_icon;
 
   return (
@@ -33,7 +35,7 @@ export default function TopBar() {
       <span>{user.type.charAt(0).toUpperCase() + user.type.slice(1)}</span>
       <ColoredButton
         text="LOGOUT"
-        onClick={handleClick}
+        onClick={handleClickLogout}
         to="login"
         className="text-black text-xxs"
       />

@@ -46,7 +46,7 @@ export default function LightCard({ light, cache }: props) {
     )
   );
   const [brightness, setBrightness] = useState(cache.value.v?.vs?.ac / 2.55);
-  
+
   const dispatch = useAppDispatch();
 
   const handleColor = (color: string): void => {
@@ -87,7 +87,7 @@ export default function LightCard({ light, cache }: props) {
               <img
                 src={disconnected_icon}
                 className="absolute right-2 top-2 h-5 w-5 z-50"
-                alt='disconnected icon'
+                alt="disconnected icon"
               />
               <div className="absolute w-full h-full bg-black-transparent top-0 left-0" />
             </>

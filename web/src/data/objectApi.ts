@@ -1,15 +1,30 @@
 import API from "./API";
 
-export async function getObjects() {
+export async function getObjectsAPI() {
   try {
     const response = await API.get("/client");
-    return Promise.resolve(response.data);
+    if (response.status !== 200) {
+      return Promise.reject(response.data);
+    } else {
+      return Promise.resolve(response.data);
+    }
   } catch (err) {
     return Promise.reject(err);
   }
 }
-
-export async function getCache() {
+export async function getObjects() {
+  try {
+    const response = await API.get("/client");
+    if (response.status !== 200) {
+      return Promise.reject(response.data);
+    } else {
+      return Promise.resolve(response.data);
+    }
+  } catch (err) {
+    return Promise.reject(err);
+  }
+}
+export async function getCacheAPI() {
   try {
     const response = await API.get("/cache");
     return Promise.resolve(response.data);

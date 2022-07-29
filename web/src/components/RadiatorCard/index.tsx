@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { ConnectedObject } from "../../types/ConnectedObject";
 import { Cache } from "../../types/Cache";
 
-import { getExeId, getObjects, setObject } from "../../data/objectApi";
+import { getExeId, getObjectsAPI, setObject } from "../../data/objectApi";
 
 import radiator_close_icon from "../../assets/icons/radiator_close_icon.svg";
 import radiator_open_icon from "../../assets/icons/radiator_open_icon.svg";
@@ -18,7 +18,6 @@ type props = {
 };
 
 export default function RadiatorCard({ radiator, cache }: props) {
-
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useAppDispatch();
 
@@ -29,7 +28,7 @@ export default function RadiatorCard({ radiator, cache }: props) {
           setIsOpen(!isOpen);
         }
       );
-      await getObjects().then((responses: Array<ConnectedObject>) => {
+      await getObjectsAPI().then((responses: Array<ConnectedObject>) => {
         dispatch(setRadiator(responses));
       });
     });
@@ -55,8 +54,7 @@ export default function RadiatorCard({ radiator, cache }: props) {
           />
           <span className="text-grey-light text-xl">{radiator.client}</span>
           <div className="flex items-center">
-            <div className="flex w-5/6 items-center mr-1">
-            </div>
+            <div className="flex w-5/6 items-center mr-1"></div>
           </div>
         </div>
       )}

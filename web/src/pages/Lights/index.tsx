@@ -1,52 +1,60 @@
-import React, { useEffect, useState } from 'react';
-import { useAppSelector } from '../../store/store';
+import React, { useEffect, useState } from "react";
+import { useAppDispatch, useAppSelector } from "../../store/store";
 
-import { ConnectedObject } from '../../types/ConnectedObject';
-import { Cache } from '../../types/Cache';
+import { ConnectedObject } from "../../types/ConnectedObject";
+import { Cache } from "../../types/Cache";
 
-import LightCard from '../../components/LightCard';
-import ClassicLightCard from '../../components/ClassicLightCard';
+import LightCard from "../../components/LightCard";
+import ClassicLightCard from "../../components/ClassicLightCard";
+import { getData } from "../../data/data";
 
 export default function Lights() {
-  const { lights, cache } = useAppSelector((store) => store.object)
-  const [classicLights, setClassicLights] = useState<[string, number][]>()
+  const dispatch = useAppDispatch();
 
+  const { lights, cache } = useAppSelector((store) => store.object);
+  const [classicLights, setClassicLights] = useState<[string, number][]>();
+  // getCache(dispatch);
   useEffect((): void => {
+    getData(dispatch);
+
     const classicLightsId = lights.find((light: ConnectedObject) => {
-      return light.topic === 'eleclairage'
-    })?.id_client
+      return light.topic === "eleclairage";
+    })?.id_client;
     const classicLightCache = cache.find((element: Cache) => {
-      return element.id_client === classicLightsId
-    })
-    if(classicLightCache){
-      setClassicLights(Object.entries(classicLightCache?.value?.post))
+      return element.id_client === classicLightsId;
+    });
+    if (classicLightCache) {
+      setClassicLights(Object.entries(classicLightCache?.value?.post));
     }
-  }, [])
+  }, [getData]);
 
   const displayWLEDLights = lights.map(
-    (light: ConnectedObject) => 
-      light.topic !== 'eleclairage' && cache &&
-      <LightCard 
-        key={light.id_client}
-        light={light} 
-        cache={cache.find((element: Cache) => {
-          return light.id_client === element.id_client
-        }) as Cache}/>
-    )
+    (light: ConnectedObject) =>
+      light.topic !== "eleclairage" &&
+      cache && (
+        <LightCard
+          key={light.id_client}
+          light={light}
+          cache={
+            cache.find((element: Cache) => {
+              return light.id_client === element.id_client;
+            }) as Cache
+          }
+        />
+      )
+  );
 
-  const displayClassicLights = classicLights?.map(
-    (light: [string, number]) => 
-      <ClassicLightCard
-        key={light[0]}
-        name={light[0]}
-        isLightOpen={light[1]? true:false}
-      />
-    
-  )
-    
+  const displayClassicLights = classicLights?.map((light: [string, number]) => (
+    <ClassicLightCard
+      key={light[0]}
+      name={light[0]}
+      isLightOpen={light[1] ? true : false}
+    />
+  ));
+
   return (
     <div className="w-full h-screen text-white">
-      <div className='flex justify-evenly flex-wrap'>
+      <div className="flex justify-evenly flex-wrap">
         {displayClassicLights}
         {displayWLEDLights}
       </div>

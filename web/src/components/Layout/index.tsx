@@ -1,22 +1,31 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from "react";
 import { Outlet } from "react-router-dom";
-
 import { useNavigate } from "react-router-dom";
-import { useAppSelector } from "../../store/store";
-
+import { getData } from "../../data/data";
+import { useAppDispatch, useAppSelector } from "../../store/store";
 import TopBar from "./TopBar";
 import SubTopBar from "./SubTopBar";
 import LeftMenu from "./LeftMenu";
+import { logout } from "../../states/authSlice";
+import localTokenSet from "../../data/localStokage";
 
 export default function Layout() {
   const navigate = useNavigate();
   const { isLogged } = useAppSelector((store) => store.auth);
-
+  const dispatch = useAppDispatch();
   useEffect(() => {
+    console.log("isLogged", isLogged);
     if (!isLogged) {
       navigate("/login");
+    } else {
+      getData(dispatch).catch((e) => {
+        dispatch(logout());
+        localTokenSet({});
+        navigate("/login");
+      });
     }
-  }, [isLogged, navigate]);
+  }, [getData, isLogged, navigate]);
 
   return (
     <div className="max-h-full h-full flex flex-row max-w-full">
